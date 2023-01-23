@@ -1,9 +1,8 @@
-# custom-toast
+# custom-mfa
 
 ## Vite, Vue3 web-component `custom-mfa`
 ### (standalone web component made with Vue3 & Vite)
 
-## [![Generic badge](https://urldefense.com/v3/__https://img.shields.io/badge/:-HTML-red.svg?style=flat&logo=HTML5)*(https:**Adeveloper.mozilla.org*en-US*docs*Web*Guide*HTML*HTML5__;XS8vLy8vLy8v!!AasEvJkIHxxHjNOey1g!XNzdr-fXHbBDXGwdWtPeGrgYisdEo5TjispGPrZJDccHMKZMbSUAbADA-UPof845Dv6ucPtdad6J98409ht6HA$ ) [![Generic badge](https://urldefense.com/v3/__https://img.shields.io/badge/:-CSS-blue.svg?style=flat&logo=CSS3)*(https:**Awww.tutorialrepublic.com*css-tutorial*__;XS8vLy8!!AasEvJkIHxxHjNOey1g!XNzdr-fXHbBDXGwdWtPeGrgYisdEo5TjispGPrZJDccHMKZMbSUAbADA-UPof845Dv6ucPtdad6J985F5hm2Pg$ ) [![Generic badge](https://urldefense.com/v3/__https://img.shields.io/badge/:-JavaScript-yellow.svg?style=flat&logo=JavaScript)*(https:**Adeveloper.mozilla.org*en-US*docs*Web*JavaScript__;XS8vLy8vLw!!AasEvJkIHxxHjNOey1g!XNzdr-fXHbBDXGwdWtPeGrgYisdEo5TjispGPrZJDccHMKZMbSUAbADA-UPof845Dv6ucPtdad6J987-9JVkyg$ ) [![Generic badge](https://urldefense.com/v3/__https://img.shields.io/badge/:-VUE.js-BRIGHTGREEN.svg?style=flat&logo=Vue.js)*(https:**Avuejs.org*__;XS8vLw!!AasEvJkIHxxHjNOey1g!XNzdr-fXHbBDXGwdWtPeGrgYisdEo5TjispGPrZJDccHMKZMbSUAbADA-UPof845Dv6ucPtdad6J986YTYmv7w$ ) [![Generic badge](https://urldefense.com/v3/__https://img.shields.io/badge/:-Vite-darkblue.svg?style=flat&logo=Vite)*(https:**Avitejs.dev*__;XS8vLw!!AasEvJkIHxxHjNOey1g!XNzdr-fXHbBDXGwdWtPeGrgYisdEo5TjispGPrZJDccHMKZMbSUAbADA-UPof845Dv6ucPtdad6J985xDrw12w$ )
 <hr>
 
 ## Usage
