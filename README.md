@@ -67,6 +67,7 @@
     ### **`translations`**
     - Type: String
 
+
 - ##### ***Styles are received from site elements:***
     ### **`primaryColor`**
     - Type: String
@@ -80,6 +81,7 @@
     - Type: String
     - Default: ""
 
+
 - ##### ***Actions url's are received from velocity actions:***
     ### **`mfaStatusUrl`**
     - Type: String
@@ -92,6 +94,7 @@
     ### **`mfaCheckVerificationCodeUrl`**
     - Type: String
     - Default: ""
+
 
 <hr>
 

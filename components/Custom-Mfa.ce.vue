@@ -2,7 +2,7 @@
   <div class="comp">
     <div class="header">
       <h1 :style="{ 'font-weight': isEditing ? 600 : 400 }">
-        2. {{ translate("notes.2fa_authentication") }}
+        2. {{ translate('notes.2fa_authentication') }}
       </h1>
       <button class="btn-edit" @click="editing">
         <svg
@@ -14,7 +14,9 @@
           height="32px"
           stroke="rgb(255, 255, 255)"
           stroke-width="0"
-          :style="{ fill: isEditing ? 'rgb(210, 210, 210)' : 'rgb(255, 255, 255)' }"
+          :style="{
+            fill: isEditing ? 'rgb(210, 210, 210)' : 'rgb(255, 255, 255)',
+          }"
         >
           <g transform="matrix(1.3333333,0,0,-1.3333333,0,34.179467)">
             <g transform="translate(21.6945,25.6347)">
@@ -54,7 +56,7 @@
       </div>
     </Transition>
     <div class="subhead">
-      <h6>{{ translate("notes.status") }}</h6>
+      <h6>{{ translate('notes.status') }}</h6>
       <h4>{{ translateMfaStatus }}</h4>
       <Transition name="slide-up" appear>
         <button v-if="0 === 1" class="btn btn-state">2-Faktor</button>
@@ -66,40 +68,40 @@
       <div class="main" v-if="isEditing">
         <!-- *********************** INACTIVE *********************** -->
         <div class="content" v-if="templateState === 'inactive'">
-          <h3>{{ translate("notes.important_note_title") }}</h3>
-          <p>{{ translate("notes.important_note") }}</p>
+          <h3>{{ translate('notes.important_note_title') }}</h3>
+          <p>{{ translate('notes.important_note') }}</p>
         </div>
         <!-- *********************** ACTIVATION *********************** -->
         <div class="content" v-if="templateState === 'activation'">
           <h3 class="content-title">
-            {{ translate("notes.important_note_title") }}
+            {{ translate('notes.important_note_title') }}
           </h3>
-          <p>{{ translate("notes.mfa_info_01") }}</p>
-          <p>{{ translate("notes.mfa_info_011") }}</p>
-          <p>{{ translate("notes.mfa_info_012") }}</p>
-          <p>{{ translate("notes.mfa_info_013") }}</p>
+          <p>{{ translate('notes.mfa_info_01') }}</p>
+          <p>{{ translate('notes.mfa_info_011') }}</p>
+          <p>{{ translate('notes.mfa_info_012') }}</p>
+          <p>{{ translate('notes.mfa_info_013') }}</p>
           <p>
-            <b>{{ translate("notes.mfa_info_014") }}</b>
+            <b>{{ translate('notes.mfa_info_014') }}</b>
           </p>
         </div>
         <!-- *********************** ACTIVE *********************** -->
         <div class="code" v-if="templateState === 'active'">
           <h3>
-            {{ translate("buttons.activate_2fa") }}
+            {{ translate('buttons.activate_2fa') }}
           </h3>
           <div class="note">
-            <p>{{ translate("notes.note") }}</p>
-            <p>{{ translate("notes.mfa_info_02") }}</p>
+            <p>{{ translate('notes.note') }}</p>
+            <p>{{ translate('notes.mfa_info_02') }}</p>
           </div>
-          <p>{{ translate("notes.installation_instruction") }}</p>
-          <p>{{ translate("notes.installation_steps") }}</p>
-          <a href="#" class="download">{{ translate("notes.download_ios") }}</a>
+          <p>{{ translate('notes.installation_instruction') }}</p>
+          <p>{{ translate('notes.installation_steps') }}</p>
+          <a href="#" class="download">{{ translate('notes.download_ios') }}</a>
           <a href="#" class="download">{{
-            translate("notes.download_android")
+            translate('notes.download_android')
           }}</a>
-          <p>{{ translate("notes.installation_steps2") }}</p>
+          <p>{{ translate('notes.installation_steps2') }}</p>
           <img src="" alt="qrcode" class="qrcode" />
-          <p>{{ translate("notes.installation_steps3") }}</p>
+          <p>{{ translate('notes.installation_steps3') }}</p>
           <input
             v-model="verificationCode"
             class="input-code"
@@ -113,33 +115,33 @@
         <!-- *********************** CODE *********************** -->
         <div class="content" v-if="templateState === 'code'">
           <h3 class="content-title">
-            {{ translate("notes.important_note_title") }}
+            {{ translate('notes.important_note_title') }}
           </h3>
           <div class="note">
-            <p>{{ translate("notes.download_code_info") }}</p>
+            <p>{{ translate('notes.download_code_info') }}</p>
           </div>
-          <p>{{ translate("notes.backup_codes") }}</p>
-          <p>{{ translate("notes.backup_codes_info") }}</p>
+          <p>{{ translate('notes.backup_codes') }}</p>
+          <p>{{ translate('notes.backup_codes_info') }}</p>
           <p>
-            <b>{{ translate("notes.backup_codes_info2") }}</b>
+            <b>{{ translate('notes.backup_codes_info2') }}</b>
           </p>
         </div>
         <!-- *********************** BACKUP *********************** -->
         <div class="content" v-if="templateState === 'backup'">
-          <p>{{ translate("notes.backup_codes") }}</p>
-          <p>{{ translate("notes.important_codes_info") }}</p>
+          <p>{{ translate('notes.backup_codes') }}</p>
+          <p>{{ translate('notes.important_codes_info') }}</p>
           <p>
-            <b>{{ translate("notes.backup_codes_info2") }}</b>
+            <b>{{ translate('notes.backup_codes_info2') }}</b>
           </p>
         </div>
         <!-- *********************** DEACTIVATION *********************** -->
         <div class="content" v-if="templateState === 'deactivation'">
           <p>
-            <b>{{ translate("notes.save_codes") }}</b>
+            <b>{{ translate('notes.save_codes') }}</b>
           </p>
-          <p>{{ translate("notes.received_codes_info") }}</p>
+          <p>{{ translate('notes.received_codes_info') }}</p>
           <p>
-            <b>{{ translate("notes.received_codes_info2") }}</b>
+            <b>{{ translate('notes.received_codes_info2') }}</b>
           </p>
           <input
             v-model="verificationCode"
@@ -152,7 +154,7 @@
         <!-- *********************** BUTTONS *********************** -->
         <div class="actions">
           <button v-if="templateState === 'code'" class="btn">
-            {{ translate("buttons.generate_codes") }}
+            {{ translate('buttons.generate_codes') }}
           </button>
           <button class="btn btn-right" @click="handleClick">
             {{ getButtonLabel }}
@@ -163,15 +165,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  inheritAttrs: false,
-};
-</script>
 <script setup>
-import { ref, computed, useAttrs, onMounted, watch } from "vue";
-import { useFetch } from "../composables/useFetch";
-import { store } from "../store/store";
+import { ref, computed, useAttrs, onMounted, watch } from 'vue';
+import { useFetch } from '../composables/useFetch';
+import { store } from '../store/store';
 
 // setting props
 const props = defineProps({
@@ -180,7 +177,7 @@ const props = defineProps({
   },
   primaryColor: {
     type: String,
-    default: "#000",
+    default: '#000',
   },
   font: {
     type: String,
@@ -188,19 +185,19 @@ const props = defineProps({
   },
   logoUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaStatusUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaActivateUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaCheckVerificationCodeUrl: {
     type: String,
-    default: "",
+    default: '',
   },
 });
 console.log(props);
@@ -208,23 +205,14 @@ onMounted(() => {
   props.mfaStatusUrl && getMfaStatus();
 });
 
-// setting attributes
-// const attrs = useAttrs();
-// const setAttrs = (prop) => {
-//   Object.keys(attrs).forEach((a) => {
-//     prop[a] = JSON.parse(attrs[a]);
-//   });
-// };
-
 const templateState = ref(null);
 const isEditing = ref(false);
 const editing = () => {
   isEditing.value = !isEditing.value;
-  //if (!isEditing.value) errorMsg.value = null;
   if (!isEditing.value) store.error = null;
   templateState.value = !mfaStatus.value
-    ? mapStates["activation"].template
-    : mapStates["code"].template;
+    ? mapStates['activation'].template
+    : mapStates['code'].template;
 };
 const getButtonLabel = computed(() => {
   return translate(mapStates[templateState.value].label);
@@ -234,17 +222,17 @@ const verificationCode = ref(null);
 watch(
   () => verificationCode.value,
   (newValue, oldValue) => {
-    verificationCode.value = newValue.replace(/[^0-9]/g, "");
+    verificationCode.value = newValue.replace(/[^0-9]/g, '');
   }
 );
 
 const mfaStatus = ref(null);
 const translateMfaStatus = computed(() => {
-  const forTranslation = mfaStatus.value ? "notes.active" : "notes.inactive";
+  const forTranslation = mfaStatus.value ? 'notes.active' : 'notes.inactive';
   return translate(forTranslation);
 });
 
-const prefix = "cips.mfa.";
+const prefix = 'cips.mfa.';
 const translate = (key) => {
   return JSON.parse(props.translations)[prefix + key];
 };
@@ -257,71 +245,53 @@ const errorMsg = computed(() => {
   setTimeout(() => {
     store.error = null;
   }, 6000);
-  return translate(store.error?.replace(prefix, ""));
+  return translate(store.error?.replace(prefix, ''));
 });
 const successMsg = computed(() => {
   setTimeout(() => {
     store.success = null;
   }, 6000);
-  return translate(store.success?.replace(prefix, ""));
+  return translate(store.success?.replace(prefix, ''));
 });
 
 const getMfaStatus = async () => {
-  const received = await useFetch(props.mfaStatusUrl, "GET");
+  const received = await useFetch(props.mfaStatusUrl, 'GET');
   if (!received.error)
     mfaStatus.value = received.multifactorAuthenticationEnabled;
 };
 
 const mfaActivate = async () => {
-  const received = await useFetch(props.mfaActivateUrl, "POST");
+  const received = await useFetch(props.mfaActivateUrl, 'POST');
   if (!received.error) {
     getMfaStatus();
-    templateState.value = "code";
-    console.log("mfa activate", received);
+    templateState.value = 'code';
+    console.log('mfa activate', received);
   }
 };
 
 const mfaCheckVerificationCode = async () => {
-  const received = await useFetch(props.mfaCheckVerificationCodeUrl, "POST");
+  const received = await useFetch(props.mfaCheckVerificationCodeUrl, 'POST');
   if (!received.error) {
-    console.log("mfa verification", received);
+    console.log('mfa verification', received);
   }
 };
 
 const mapStates = {
-  inactive: { template: "inactive", label: "" },
-  active: { temlplate: "active", label: "" },
+  inactive: { template: 'inactive', label: '' },
+  active: { temlplate: 'active', label: '' },
   activation: {
-    template: "activation",
-    label: "buttons.activate_2fa",
+    template: 'activation',
+    label: 'buttons.activate_2fa',
     action: mfaActivate,
   },
   code: {
-    template: "code",
-    label: "buttons.activate_2fa",
+    template: 'code',
+    label: 'buttons.activate_2fa',
     action: mfaCheckVerificationCode,
   },
-  backup: { template: "backup", label: "" },
-  deactivation: { template: "deactivation", label: "" },
+  backup: { template: 'backup', label: '' },
+  deactivation: { template: 'deactivation', label: '' },
 };
-
-// function getMfaStatus() {
-//   fetch(props.mfaStatusUrl, {
-//     method: 'GET',
-//     dataType: 'json',
-//     ContentType: 'application/json',
-//   })
-//     .then((resp) => {
-//       return resp.json();
-//     })
-//     .then((status) => {
-//       mfaStatus.value = status.multifactorAuthenticationEnabled;
-//       console.log('Success: ', status);
-//     })
-//     .catch((err) => {
-//       console.log('Error: ', err);
-//     });
-// }
 </script>
 <style lang="scss">
 * {
