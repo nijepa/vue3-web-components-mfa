@@ -72,46 +72,53 @@
           <p>{{ translate('notes.important_note') }}</p>
         </div>
         <!-- *********************** ACTIVATION *********************** -->
-        <div class="content" v-if="templateState === 'activation'">
-          <h3 class="content-title">
-            {{ translate('notes.important_note_title') }}
-          </h3>
-          <p>{{ translate('notes.mfa_info_01') }}</p>
-          <p>{{ translate('notes.mfa_info_011') }}</p>
-          <p>{{ translate('notes.mfa_info_012') }}</p>
-          <p>{{ translate('notes.mfa_info_013') }}</p>
-          <p>
-            <b>{{ translate('notes.mfa_info_014') }}</b>
-          </p>
-        </div>
-        <!-- *********************** ACTIVE *********************** -->
-        <div class="code" v-if="templateState === 'active'">
-          <h3>
-            {{ translate('buttons.activate_2fa') }}
-          </h3>
-          <div class="note">
-            <p>{{ translate('notes.note') }}</p>
-            <p>{{ translate('notes.mfa_info_02') }}</p>
+        <Transition name="fade" mode="out-in">
+          <div class="content" v-if="templateState === 'activation'">
+            <h3 class="content-title">
+              {{ translate('notes.important_note_title') }}
+            </h3>
+            <p>{{ translate('notes.mfa_info_01') }}</p>
+            <p>{{ translate('notes.mfa_info_011') }}</p>
+            <p>{{ translate('notes.mfa_info_012') }}</p>
+            <p>{{ translate('notes.mfa_info_013') }}</p>
+            <p>
+              <b>{{ translate('notes.mfa_info_014') }}</b>
+            </p>
           </div>
-          <p>{{ translate('notes.installation_instruction') }}</p>
-          <p>{{ translate('notes.installation_steps') }}</p>
-          <a href="#" class="download">{{ translate('notes.download_ios') }}</a>
-          <a href="#" class="download">{{
-            translate('notes.download_android')
-          }}</a>
-          <p>{{ translate('notes.installation_steps2') }}</p>
-          <img src="" alt="qrcode" class="qrcode" />
-          <p>{{ translate('notes.installation_steps3') }}</p>
-          <input
-            v-model="verificationCode"
-            class="input-code"
-            :maxlength="6"
-            type="text"
-            name=""
-            id=""
-          />
-          {{ verificationCode }}
-        </div>
+        <!-- *********************** ACTIVE *********************** -->
+          <div class="code" v-else-if="templateState === 'active'">
+            <h3>
+              {{ translate('buttons.activate_2fa') }}
+            </h3>
+            <div class="note">
+              <p>
+                <b>{{ translate('notes.note') }}</b>
+              </p>
+              <p>{{ translate('notes.mfa_info_02') }}</p>
+            </div>
+            <p>{{ translate('notes.installation_instruction') }}</p>
+            <p>{{ translate('notes.installation_steps') }}</p>
+            <a href="#" class="download">{{
+              translate('notes.download_ios')
+            }}</a>
+            <a href="#" class="download">{{
+              translate('notes.download_android')
+            }}</a>
+            <p>{{ translate('notes.installation_steps2') }}</p>
+            <img src="" alt="qrcode" class="qrcode" />
+            <p>{{ translate('notes.installation_steps3') }}</p>
+            <input
+              v-model="verificationCode"
+              class="input-code"
+              :maxlength="6"
+              type="text"
+              name=""
+              id=""
+              ref="code"
+            />
+            {{ verificationCode }}
+          </div>
+        </Transition>
         <!-- *********************** CODE *********************** -->
         <div class="content" v-if="templateState === 'code'">
           <h3 class="content-title">
@@ -153,7 +160,7 @@
         </div>
         <!-- *********************** BUTTONS *********************** -->
         <div class="actions">
-          <button v-if="templateState === 'code'" class="btn">
+          <button v-if="templateState === 'coder'" class="btn">
             {{ translate('buttons.generate_codes') }}
           </button>
           <button class="btn btn-right" @click="handleClick">
@@ -166,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, computed, useAttrs, onMounted, watch } from 'vue';
+import { ref, computed, useAttrs, onMounted, watch, nextTick } from 'vue';
 import { useFetch } from '../composables/useFetch';
 import { store } from '../store/store';
 
@@ -260,6 +267,17 @@ const getMfaStatus = async () => {
     mfaStatus.value = received.multifactorAuthenticationEnabled;
 };
 
+const code = ref(null);
+const mfaQrcode = async () => {
+  //const received = await useFetch(props.mfaStatusUrl, 'GET');
+  //if (!received.error)
+  // mfaStatus.value = received.multifactorAuthenticationEnabled;
+  templateState.value = 'active';
+  setTimeout(() => {
+    code.value?.focus()
+  }, 300);
+};
+
 const mfaActivate = async () => {
   const received = await useFetch(props.mfaActivateUrl, 'POST');
   if (!received.error) {
@@ -278,11 +296,11 @@ const mfaCheckVerificationCode = async () => {
 
 const mapStates = {
   inactive: { template: 'inactive', label: '' },
-  active: { temlplate: 'active', label: '' },
+  active: { temlplate: 'active', label: 'buttons.activate_2fa' },
   activation: {
     template: 'activation',
     label: 'buttons.activate_2fa',
-    action: mfaActivate,
+    action: mfaQrcode,
   },
   code: {
     template: 'code',
@@ -480,5 +498,17 @@ const mapStates = {
 .slide-up-leave-to {
   opacity: 0;
   transform: translateY(-30px);
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
 }
 </style>

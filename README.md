@@ -1,12 +1,12 @@
 # custom-mfa
 
 ## Vite, Vue3 web-component `custom-mfa`
-### (standalone web component made with Vue3 & Vite)
+#### (standalone web component made with Vue3 & Vite)
 
 <hr>
 
 ## Usage
-## Import component
+### Import component
 #### In HTML header:
 ```html
   <script type="importmap">
@@ -20,7 +20,7 @@
 
 ```
 
-## Place component
+### Place component
 #### in velocity template
 ```html
   <custom-mfa />
@@ -67,7 +67,7 @@
     ### **`translations`**
     - Type: String
 
-
+<br/>
 - ##### ***Styles are received from site elements:***
     ### **`primaryColor`**
     - Type: String
@@ -81,7 +81,7 @@
     - Type: String
     - Default: ""
 
-
+<br/>
 - ##### ***Actions url's are received from velocity actions:***
     ### **`mfaStatusUrl`**
     - Type: String
@@ -95,7 +95,7 @@
     - Type: String
     - Default: ""
 
-
+<br/>
 <hr>
 
 ### Project setup
