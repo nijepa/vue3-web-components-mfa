@@ -68,6 +68,7 @@
     - Type: String
 
 <br/>
+
 - ##### ***Styles are received from site elements:***
     ### **`primaryColor`**
     - Type: String
@@ -82,6 +83,7 @@
     - Default: ""
 
 <br/>
+
 - ##### ***Actions url's are received from velocity actions:***
     ### **`mfaStatusUrl`**
     - Type: String
