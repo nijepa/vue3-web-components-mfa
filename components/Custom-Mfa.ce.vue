@@ -59,7 +59,9 @@
       <h6>{{ translate('notes.status') }}</h6>
       <h4>{{ translateMfaStatus }}</h4>
       <Transition name="slide-up" appear>
-        <button v-if="0 === 1" class="btn btn-state">2-Faktor</button>
+        <button v-if="!initialActivation" class="btn btn-state">
+          {{ translate('buttons.edit_2fa') }}
+        </button>
       </Transition>
     </div>
     <hr v-if="isEditing" />
@@ -70,6 +72,9 @@
         <div class="content" v-if="templateState === 'inactive'">
           <h3>{{ translate('notes.important_note_title') }}</h3>
           <p>{{ translate('notes.important_note') }}</p>
+          <p>{{ translate('notes.important_note2') }}</p>
+          <p>{{ translate('notes.important_note3') }}</p>
+          <p>{{ translate('notes.important_note4') }}</p>
         </div>
         <!-- *********************** ACTIVATION *********************** -->
         <Transition name="fade" mode="out-in">
@@ -85,7 +90,7 @@
               <b>{{ translate('notes.mfa_info_014') }}</b>
             </p>
           </div>
-        <!-- *********************** ACTIVE *********************** -->
+          <!-- *********************** ACTIVE *********************** -->
           <div class="code" v-else-if="templateState === 'active'">
             <h3>
               {{ translate('buttons.activate_2fa') }}
@@ -116,7 +121,6 @@
               id=""
               ref="code"
             />
-            {{ verificationCode }}
           </div>
         </Transition>
         <!-- *********************** CODE *********************** -->
@@ -135,10 +139,37 @@
         </div>
         <!-- *********************** BACKUP *********************** -->
         <div class="content" v-if="templateState === 'backup'">
-          <p>{{ translate('notes.backup_codes') }}</p>
+          <p>
+            <b>{{ translate('notes.backup_codes') }}</b>
+          </p>
           <p>{{ translate('notes.important_codes_info') }}</p>
           <p>
             <b>{{ translate('notes.backup_codes_info2') }}</b>
+          </p>
+        </div>
+        <!-- *********************** DEACTIVATE *********************** -->
+        <div class="content" v-if="templateState === 'deactivate'">
+          <p>
+            <b>{{ translate('notes.disable_2fa') }}</b>
+          </p>
+          <div class="note">
+            <p>
+              <b>{{ translate('notes.note') }}</b>
+            </p>
+            <p>{{ translate('notes.mfa_info_02') }}</p>
+          </div>
+          <p>{{ translate('notes.change_device') }}</p>
+          <p>
+            <b>{{ translate('notes.link_device_info') }}</b>
+          </p>
+          <p>
+            {{ translate('notes.device_instructions') }}
+          </p>
+          <p>
+            <b>{{ translate('notes.disable_2fa') }}</b>
+          </p>
+          <p>
+            {{ translate('notes.confirm_disable_2fa') }}
           </p>
         </div>
         <!-- *********************** DEACTIVATION *********************** -->
@@ -160,10 +191,15 @@
         </div>
         <!-- *********************** BUTTONS *********************** -->
         <div class="actions">
-          <button v-if="templateState === 'coder'" class="btn">
+          <button v-if="templateState === 'backup'" class="btn">
             {{ translate('buttons.generate_codes') }}
           </button>
-          <button class="btn btn-right" @click="handleClick">
+          <button
+            class="btn btn-right"
+            @click="handleClick"
+            :disabled="isDisabled"
+            :class="{ 'btn-disabled': isDisabled }"
+          >
             {{ getButtonLabel }}
           </button>
         </div>
@@ -214,15 +250,27 @@ onMounted(() => {
 
 const templateState = ref(null);
 const isEditing = ref(false);
+const initialActivation = ref(true);
 const editing = () => {
   isEditing.value = !isEditing.value;
   if (!isEditing.value) store.error = null;
+  // TODO check if new activation proccess
+  initialActivation.value = false;
   templateState.value = !mfaStatus.value
     ? mapStates['activation'].template
     : mapStates['code'].template;
 };
 const getButtonLabel = computed(() => {
   return translate(mapStates[templateState.value].label);
+});
+const isDisabled = computed(() => {
+  if (templateState.value === 'active') {
+    console.log(4, verificationCode.value);
+    return !verificationCode.value || verificationCode.value?.length !== 6
+      ? true
+      : false;
+  }
+  return false;
 });
 
 const verificationCode = ref(null);
@@ -274,7 +322,7 @@ const mfaQrcode = async () => {
   // mfaStatus.value = received.multifactorAuthenticationEnabled;
   templateState.value = 'active';
   setTimeout(() => {
-    code.value?.focus()
+    code.value?.focus();
   }, 300);
 };
 
@@ -295,7 +343,7 @@ const mfaCheckVerificationCode = async () => {
 };
 
 const mapStates = {
-  inactive: { template: 'inactive', label: '' },
+  inactive: { template: 'inactive', label: 'buttons.activate_2fa' },
   active: { temlplate: 'active', label: 'buttons.activate_2fa' },
   activation: {
     template: 'activation',
@@ -307,7 +355,8 @@ const mapStates = {
     label: 'buttons.activate_2fa',
     action: mfaCheckVerificationCode,
   },
-  backup: { template: 'backup', label: '' },
+  backup: { template: 'backup', label: 'buttons.download_save_codes' },
+  deactivate: { template: 'deactivate', label: 'buttons.2fa_disable' },
   deactivation: { template: 'deactivation', label: '' },
 };
 </script>
@@ -463,6 +512,11 @@ const mapStates = {
   }
   .btn-right {
     margin-left: auto;
+  }
+  .btn-disabled {
+    background-color: rgb(93, 93, 93);
+    border-color: rgb(93, 93, 93);
+    pointer-events: none;
   }
   .input-code {
     position: relative;

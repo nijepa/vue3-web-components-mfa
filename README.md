@@ -1,13 +1,17 @@
 # custom-mfa
 
-## Vite, Vue3 web-component `custom-mfa`
-#### (standalone web component made with Vue3 & Vite)
+## Vite, Vue3 web-component *`custom-mfa`*
+
+(standalone web component made with Vue3 & Vite)
 
 <hr>
 
 ## Usage
+
 ### Import component
-#### In HTML header:
+
+#### In HTML header
+
 ```html
   <script type="importmap">
     {
@@ -21,12 +25,17 @@
 ```
 
 ### Place component
+
 #### in velocity template
+
 ```html
   <custom-mfa />
 ```
+
 ## Passing data to component
-#### We can use helper function to pass all the attributes:
+
+### We can use helper function to pass all the attributes
+
 ```js
   function setAttributes(el, attrs) {
     for (var key in attrs) {
@@ -38,7 +47,9 @@
     }
   }
 ```
-#### *passing data example:*
+
+### passing data example:
+
 ```js
   const mfa = document.querySelector('custom-mfa')
 
@@ -57,60 +68,82 @@
 
   setAttributes(mfa, mfaProps)
 ```
+
 <hr>
 
-
 ### Props
-####   There is 3 types of props:
+
+#### There is 3 types of props
 
 - ##### ***Translations are recived from velocity action like object:***
-    ### **`translations`**
-    - Type: String
+
+### **`translations`**
+
+- Type: String
 
 <br/>
 
-- ##### ***Styles are received from site elements:***
-    ### **`primaryColor`**
-    - Type: String
-    - Default: "#000"
+- #### ***Styles are received from site elements:***
 
-    ### **`font`**
-    - Type: String
-    - Default: "'Open Sans', sans-serif"
+### **`primaryColor`**
 
-    ### **`logoUrl`**
-    - Type: String
-    - Default: ""
+- Type: String
+- Default: "#000"
 
-<br/>
+### **`font`**
 
-- ##### ***Actions url's are received from velocity actions:***
-    ### **`mfaStatusUrl`**
-    - Type: String
-    - Default: ""
+- Type: String
+- Default: "'Open Sans', sans-serif"
 
-    ### **`mfaActivateUrl`**
-    - Type: String
-    - Default: ""
+### **`logoUrl`**
 
-    ### **`mfaCheckVerificationCodeUrl`**
-    - Type: String
-    - Default: ""
+- Type: String
+- Default: ""
 
 <br/>
+
+- #### ***Actions url's are received from velocity actions:***
+
+### **`mfaStatusUrl`**
+
+- Type: String
+- Default: ""
+
+### **`mfaActivateUrl`**
+
+- Type: String
+- Default: ""
+
+### **`mfaCheckVerificationCodeUrl`**
+
+- Type: String
+- Default: ""
+
+<br/>
+<hr>
+
+## Deployment
+
+- build app 
+- rename compiled file to **`mfa.js`**
+- copy file to **`Doocroot-Explorer -> scripts/path/for/app`**
+
 <hr>
 
 ### Project setup
+
 ```
 npm install
 ```
 
 #### Compiles and hot-reloads for development
+
 ```
 npm run serve
 ```
 
 #### Compiles and minifies for production
+
 ```
 npm run build
 ```
