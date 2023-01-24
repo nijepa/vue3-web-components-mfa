@@ -103,10 +103,10 @@
             </div>
             <p>{{ translate('notes.installation_instruction') }}</p>
             <p>{{ translate('notes.installation_steps') }}</p>
-            <a href="#" class="download">{{
+            <a href="https://apps.apple.com/de/app/google-authenticator/id388497605" target="_blank" class="download">{{
               translate('notes.download_ios')
             }}</a>
-            <a href="#" class="download">{{
+            <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=de&gl=US" target="_blank" class="download">{{
               translate('notes.download_android')
             }}</a>
             <p>{{ translate('notes.installation_steps2') }}</p>
@@ -255,7 +255,7 @@ const editing = () => {
   isEditing.value = !isEditing.value;
   if (!isEditing.value) store.error = null;
   // TODO check if new activation proccess
-  initialActivation.value = false;
+  //initialActivation.value = false;
   templateState.value = !mfaStatus.value
     ? mapStates['activation'].template
     : mapStates['code'].template;
@@ -265,7 +265,6 @@ const getButtonLabel = computed(() => {
 });
 const isDisabled = computed(() => {
   if (templateState.value === 'active') {
-    console.log(4, verificationCode.value);
     return !verificationCode.value || verificationCode.value?.length !== 6
       ? true
       : false;
@@ -450,12 +449,15 @@ const mapStates = {
       width: 100%;
       .download {
         text-align: center;
-      }
-      .download:first-of-type {
-        margin-top: 1em;
-      }
-      .download:last-of-type {
-        margin-bottom: 1em;
+        &:hover {
+          color: v-bind(primaryColor);
+        }
+        &:first-of-type {
+          margin-top: 1em;
+        }
+        &:last-of-type {
+          margin-bottom: 1em;
+        }
       }
       .qrcode {
         width: 150px;

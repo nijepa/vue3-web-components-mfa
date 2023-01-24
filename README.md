@@ -73,51 +73,51 @@
 
 ### Props
 
-#### There is 3 types of props
+#### There is 3 types of props:
 
-- ##### ***Translations are recived from velocity action like object:***
+- #### ***Translations are recived from velocity action as object, need to use `JSON.parse`:***
 
-### **`translations`**
+  ### **`translations`**
 
-- Type: String
+    - Type: String
 
 <br/>
 
 - #### ***Styles are received from site elements:***
 
-### **`primaryColor`**
+  ### **`primaryColor`**
 
-- Type: String
-- Default: "#000"
+    - Type: String
+    - Default: "#000"
 
-### **`font`**
+  ### **`font`**
 
-- Type: String
-- Default: "'Open Sans', sans-serif"
+    - Type: String
+    - Default: "'Open Sans', sans-serif"
 
-### **`logoUrl`**
+  ### **`logoUrl`**
 
-- Type: String
-- Default: ""
+  - Type: String
+  - Default: ""
 
 <br/>
 
 - #### ***Actions url's are received from velocity actions:***
 
-### **`mfaStatusUrl`**
+  ### **`mfaStatusUrl`**
 
-- Type: String
-- Default: ""
+    - Type: String
+    - Default: ""
 
-### **`mfaActivateUrl`**
+  ### **`mfaActivateUrl`**
 
-- Type: String
-- Default: ""
+    - Type: String
+    - Default: ""
 
-### **`mfaCheckVerificationCodeUrl`**
+  ### **`mfaCheckVerificationCodeUrl`**
 
-- Type: String
-- Default: ""
+    - Type: String
+    - Default: ""
 
 <br/>
 <hr>
