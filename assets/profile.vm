@@ -43,7 +43,7 @@
                 <div id="content_name_image" class="sub-section-content form-section"></div>
               </section>
             #end ##end if($accountLoginProperties.hasRole('CIPS_MY_PROFILE_USER').equals(true))
-<section id="sec_name_image" class="sub-section numbered separate editable">
+<section id="sec_name_image" class="sub-section numbered separate editable" style="padding: 0;">
 <custom-mfa> </custom-mfa>
 </section>
             ## Die if-Abfrage dient dazu, dass in keinem Programm was kaputt ist, wenn live geht.
@@ -133,27 +133,31 @@
 <script src="/scripts/common/threads.js?$scriptVersion"></script>
 <script src="/scripts/cips/user-profile.js?$scriptVersion"></script>
 <script async defer>
-  const mfa = document.querySelector("custom-mfa");
-  function setAttributes(el, attrs) {
-    for (var key in attrs) {
-      const attr =
-        typeof attrs[key] !== "string"
-          ? JSON.stringify(attrs[key])
-          : attrs[key];
-      el.setAttribute(key, attr);
-    }
-  }
-  const mfaProps = {
-    translations: {
-      #foreach($resource in ${messages.getResourcesWithPrefix('cips.mfa')})
-        '$!{resource.getKey()}': '$!{resource.getValue().replace("'", "")}',
-      #end
-    },
-    "primary-color": getComputedStyle(document.querySelector('.site-title')).color,
-    font: getComputedStyle(document.querySelector('.site-title')).fontFamily,
-    "logo-url": document.querySelector('.customer-logo').src,
-    "mfa-status-url": "${link.getAction('/myprofile/mfa/checkStatus')}",
-    "mfa-activate-url": "${link.getAction('/myprofile/mfa/activate')}"
-  };
+const mfa = document.querySelector("custom-mfa");
+const element = document.querySelector('.site-title')
+
+      function setAttributes(el, attrs) {
+        for (var key in attrs) {
+          const attr =
+            typeof attrs[key] !== "string"
+              ? JSON.stringify(attrs[key])
+              : attrs[key];
+          el.setAttribute(key, attr);
+        }
+      }
+      const mfaProps = {
+        translations: {
+  #foreach($resource in ${messages.getResourcesWithPrefix('cips.mfa')})
+    '$!{resource.getKey()}': '$!{resource.getValue().replace("'", "")}',
+  #end
+},
+        "primary-color": getComputedStyle(document.querySelector('.site-title')).color,
+font: getComputedStyle(document.querySelector('.site-title')).fontFamily,
+"logo-url": document.querySelector('.customer-logo').src,
+"mfa-status-url": "${link.getAction('/myprofile/mfa/checkStatus')}",
+"mfa-activate-url": "${link.getAction('/myprofile/mfa/activate')}",
+"mfa-download-backup-codes-url": "${link.getAction('/myprofile/mfa/downloadBackupCodes')}",
+"mfa-generate-qr-code-url": "${link.getAction('/myprofile/mfa/generateQrCode')}"
+      };
   setAttributes(mfa, mfaProps);
 </script>

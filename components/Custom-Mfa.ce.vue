@@ -103,14 +103,21 @@
             </div>
             <p>{{ translate('notes.installation_instruction') }}</p>
             <p>{{ translate('notes.installation_steps') }}</p>
-            <a href="https://apps.apple.com/de/app/google-authenticator/id388497605" target="_blank" class="download">{{
-              translate('notes.download_ios')
-            }}</a>
-            <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=de&gl=US" target="_blank" class="download">{{
-              translate('notes.download_android')
-            }}</a>
+            <a
+              href="https://apps.apple.com/de/app/google-authenticator/id388497605"
+              target="_blank"
+              class="download"
+              >{{ translate('notes.download_ios') }}</a
+            >
+            <a
+              href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=de&gl=US"
+              target="_blank"
+              class="download"
+              >{{ translate('notes.download_android') }}</a
+            >
             <p>{{ translate('notes.installation_steps2') }}</p>
-            <img src="" alt="qrcode" class="qrcode" />
+            <img :src="qrCodeUrl" alt="qrcode" class="qrcode" />
+            <p class="secret">{{ sharedSecret }}</p>
             <p>{{ translate('notes.installation_steps3') }}</p>
             <input
               v-model="verificationCode"
@@ -242,6 +249,14 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  mfaDownloadBackupCodesUrl: {
+    type: String,
+    default: '',
+  },
+  mfaGenerateQrCodeUrl: {
+    type: String,
+    default: '',
+  },
 });
 console.log(props);
 onMounted(() => {
@@ -258,7 +273,7 @@ const editing = () => {
   //initialActivation.value = false;
   templateState.value = !mfaStatus.value
     ? mapStates['activation'].template
-    : mapStates['code'].template;
+    : mapStates['backup'].template;
 };
 const getButtonLabel = computed(() => {
   return translate(mapStates[templateState.value].label);
@@ -271,6 +286,9 @@ const isDisabled = computed(() => {
   }
   return false;
 });
+
+const qrCodeUrl = ref(null)
+const sharedSecret = ref(null)
 
 const verificationCode = ref(null);
 watch(
@@ -315,15 +333,6 @@ const getMfaStatus = async () => {
 };
 
 const code = ref(null);
-const mfaQrcode = async () => {
-  //const received = await useFetch(props.mfaStatusUrl, 'GET');
-  //if (!received.error)
-  // mfaStatus.value = received.multifactorAuthenticationEnabled;
-  templateState.value = 'active';
-  setTimeout(() => {
-    code.value?.focus();
-  }, 300);
-};
 
 const mfaActivate = async () => {
   const received = await useFetch(props.mfaActivateUrl, 'POST');
@@ -341,40 +350,76 @@ const mfaCheckVerificationCode = async () => {
   }
 };
 
+const mfaDownloadBackupCodes = async () => {
+  const received = await useFetch(props.mfaDownloadBackupCodesUrl, 'GET');
+  if (!received.error) {
+    console.log('mfa download codes', received);
+  }
+};
+ 
+const mfaGenerateQrCode = async () => {
+  const received = await useFetch(props.mfaGenerateQrCodeUrl, 'GET');
+  if (!received.error) {
+    qrCodeUrl.value = received.QrCodeUrl
+    sharedSecret.value = received.sharedSecret
+    templateState.value = 'active';
+    setTimeout(() => {
+      code.value?.focus();
+    }, 300);
+    console.log('mfa qrcode', received);
+  }
+};
+
 const mapStates = {
   inactive: { template: 'inactive', label: 'buttons.activate_2fa' },
   active: { temlplate: 'active', label: 'buttons.activate_2fa' },
   activation: {
     template: 'activation',
     label: 'buttons.activate_2fa',
-    action: mfaQrcode,
+    action: mfaGenerateQrCode,
   },
   code: {
     template: 'code',
     label: 'buttons.activate_2fa',
     action: mfaCheckVerificationCode,
   },
-  backup: { template: 'backup', label: 'buttons.download_save_codes' },
+  backup: {
+    template: 'backup',
+    label: 'buttons.download_save_codes',
+    action: mfaDownloadBackupCodes,
+  },
   deactivate: { template: 'deactivate', label: 'buttons.2fa_disable' },
   deactivation: { template: 'deactivation', label: '' },
 };
 </script>
 <style lang="scss">
+$small: 768px;
+$medium: 1200px;
 * {
   color: rgb(93, 93, 93);
 }
 .comp {
   display: flex;
   flex-direction: column;
-  padding: 0 0.8em 0 0.8em;
+  padding: 0;
   font-family: v-bind(font);
+  @media screen and (min-width: $medium) {
+    padding: 0 0.8em;
+  }
   .header {
     display: flex;
     justify-content: space-between;
     background-color: rgb(158, 158, 158);
     align-items: center;
-    padding: 0 1em 0 0.5em;
+    padding: 17px 15px;
     z-index: 100;
+    @media screen and (min-width: $small) {
+      padding: 31px 24px;
+    }
+    @media screen and (min-width: $medium) {
+      padding: 0 1em 0 0.5em;
+    }
+
     h1 {
       padding-left: 0.5em;
       font-size: 1.33333em;
@@ -388,9 +433,19 @@ const mapStates = {
       .svg-edit {
         cursor: pointer;
         transition: all 0.25s ease;
+        height: 50px;
+        width: 50px;
         &:hover {
           stroke-width: 1;
           //transform: scale(1.1);
+        }
+        @media screen and (min-width: $small) {
+          height: 40px;
+          width: 40px;
+        }
+        @media screen and (min-width: $medium) {
+          height: 32px;
+          width: 32px;
         }
       }
     }
@@ -463,6 +518,11 @@ const mapStates = {
         width: 150px;
         height: 150px;
         align-self: center;
+        margin: 1em 0;
+      }
+      .secret {
+        margin: 0 auto;
+        color: #c31a19;
       }
     }
     .actions {
@@ -471,6 +531,7 @@ const mapStates = {
       justify-content: space-between;
       align-items: center;
       margin-top: 1em;
+      flex-wrap: wrap;
     }
   }
   .note {
@@ -482,7 +543,7 @@ const mapStates = {
     display: inline-block;
     font-weight: 400;
     text-align: center;
-    white-space: nowrap;
+    //white-space: nowrap;
     vertical-align: middle;
     -ms-touch-action: manipulation;
     touch-action: manipulation;
@@ -501,12 +562,21 @@ const mapStates = {
     vertical-align: middle;
     -webkit-transition: opacity 0.3s;
     transition: opacity 0.3s;
+    width: 100%;
+    margin-top: .5em;
     &:hover {
       font-weight: 600;
       -webkit-box-shadow: none;
       box-shadow: none;
       color: rgb(255, 255, 255);
       letter-spacing: -0.0075rem;
+    }
+    @media screen and (min-width: $small) {
+      font-size: 1.1rem;
+      width: 350px;
+    }
+    @media screen and (min-width: $medium) {
+      font-size: 1rem;
     }
   }
   .btn-state {
@@ -516,8 +586,8 @@ const mapStates = {
     margin-left: auto;
   }
   .btn-disabled {
-    background-color: rgb(93, 93, 93);
-    border-color: rgb(93, 93, 93);
+    background-color: rgb(158, 158, 158);
+    border-color: rgb(158, 158, 158);
     pointer-events: none;
   }
   .input-code {
@@ -527,7 +597,7 @@ const mapStates = {
     padding: 0 20px;
     border: 1px solid rgb(93, 93, 93);
     border-radius: 0;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     background: rgb(255, 255, 255);
     -webkit-box-shadow: none;
     box-shadow: none;
