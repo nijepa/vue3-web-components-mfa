@@ -236,6 +236,18 @@
             :class="templateState !== 'backup' && 'btn-abort'"
             @click="leftAction"
           >
+            <svg
+              v-if="templateState !== 'backup'"
+              width="12px"
+              height="12px"
+              viewBox="0 0 1024 1024"
+              style="margin-right: 0.5em;"
+            >
+              <path
+                d="M768 903.232l-50.432 56.768L256 512l461.568-448 50.432 56.768L364.928 512z"
+                fill="rgb(93, 93, 93)"
+              />
+            </svg>
             {{ translate(mapStates[templateState].leftBtn) }}
           </button>
           <button
@@ -321,7 +333,7 @@ const editing = () => {
   templateState.value = !mfaStatus.value
     ? mapStates['activation'].template
     : mapStates['backup'].template;
-  console.log(templateState.value, templateFields.value);
+  console.log(mfaStatus.value, templateState.value, templateFields.value);
 };
 const templateFields = computed(() => {
   return config[templateState.value];
@@ -699,6 +711,9 @@ $medium: 1200px;
     background-color: transparent;
     color: rgb(93, 93, 93);
     border-color: rgb(93, 93, 93);
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   .btn-disabled {
     background-color: rgb(158, 158, 158);
