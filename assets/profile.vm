@@ -156,8 +156,11 @@ font: getComputedStyle(document.querySelector('.site-title')).fontFamily,
 "logo-url": document.querySelector('.customer-logo').src,
 "mfa-status-url": "${link.getAction('/myprofile/mfa/checkStatus')}",
 "mfa-activate-url": "${link.getAction('/myprofile/mfa/activate')}",
+"mfa-deactivate-url": "${link.getAction('/myprofile/mfa/deactivate')}",
 "mfa-download-backup-codes-url": "${link.getAction('/myprofile/mfa/downloadBackupCodes')}",
-"mfa-generate-qr-code-url": "${link.getAction('/myprofile/mfa/generateQrCode')}"
+"mfa-generate-qr-code-url": "${link.getAction('/myprofile/mfa/generateQrCode')}",
+"mfa-check-verification-code-url": "${link.getAction('/myprofile/mfa/checkVerificationCode')}",
+"mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}"
       };
   setAttributes(mfa, mfaProps);
 </script>
