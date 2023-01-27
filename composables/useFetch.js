@@ -7,14 +7,19 @@ export const useFetch = async (url, method, data = undefined) => {
       data,
       ContentType: "application/json",
     });
-    if (response.status === 200) return response.json();
-    store.error = "cips.mfa.error_message.status";
-    return { error: true };
-    // return {error: true, msg: `Error: ${response.status} - ${response.statusText}`}
-    // throw new Error(`status: ${response.status}, statusText: ${response.statusText}`)
+    if(response.error || response.status !== 200) {
+      store.responseMessage = {
+        isError: response.status === 200 ? response.error : true,
+        msg: response.errorMessage ? response.errorMessage : response.statusText
+      }
+      return { error: true }
+    } else {
+      return response.json();
+    }
   } catch (error) {
     console.log("Error: ", error);
-    store.error = error
+    store.responseMessage.isError = true
+    store.responseMessage.msg = error
     return { error: true };
   }
 };

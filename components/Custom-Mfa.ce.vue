@@ -35,24 +35,24 @@
     </div>
     <Transition name="slide-up" appear>
       <div
-        class="error"
-        v-if="errorMsg"
-        :class="errorMsg ? 'error-msg' : 'success-msg'"
+        class="message"
+        v-if="responseMsg.msg"
+        :class="responseMsg.isError ? 'error-msg' : 'success-msg'"
       >
         <svg width="32px" height="32px" viewBox="0 0 16 16" fill="none">
           <path
-            v-if="errorMsg"
+            v-if="responseMsg.isError"
             fill="rgb(232, 0, 0)"
             d="M6.37119,11.87271h3.2554V14H6.37119ZM6.31551,2l.37063,8.54245H9.31386L9.68449,2Z"
           />
           <path
-            v-if="successMsg"
+            v-else
             fill="rgb(12, 125, 12)"
             d="M14,4.69298L5.81846,12.87529l-3.81846-3.81846,1.63615-1.63692,2.25019,2.25019L12.43173,3.12471l1.56827,1.56827Z"
           />
         </svg>
         &nbsp;
-        {{ errorMsg }}
+        {{ responseMsg.msg }}
       </div>
     </Transition>
     <div class="subhead">
@@ -61,7 +61,7 @@
       <Transition name="fade" appear>
         <button
           v-if="isEditing && templateState === 'backup'"
-          @click="changeTemplateState(true)"
+          @click="changeTemplateState('deactivate')"
           class="btn btn-state"
         >
           {{ translate('buttons.edit_2fa') }}
@@ -209,7 +209,10 @@
             <b v-if="inputState === 'backup'">{{
               translate('notes.save_codes')
             }}</b>
-            <b v-else>{{ translate('notes.deactivate') }}</b>
+            <b v-else-if="inputState === 'deactivate'">{{
+              translate('notes.deactivate')
+            }}</b>
+            <b v-else>{{ translate('notes.enter_code') }}</b>
           </p>
           <p v-if="inputState === 'backup'">
             {{ translate('notes.received_codes_info') }}
@@ -241,7 +244,7 @@
               width="12px"
               height="12px"
               viewBox="0 0 1024 1024"
-              style="margin-right: 0.5em;"
+              style="margin-right: 0.5em"
             >
               <path
                 d="M768 903.232l-50.432 56.768L256 512l461.568-448 50.432 56.768L364.928 512z"
@@ -319,7 +322,7 @@ const props = defineProps({
 
 onMounted(() => {
   props.mfaStatusUrl && getMfaStatus();
-  mfaStatus.value = true;
+  //mfaStatus.value = true;
 });
 
 const templateState = ref(null);
@@ -327,7 +330,6 @@ const isEditing = ref(false);
 const initialActivation = ref(true);
 const editing = () => {
   isEditing.value = !isEditing.value;
-  if (!isEditing.value) store.error = null;
   // TODO check if new activation proccess
   //initialActivation.value = false;
   templateState.value = !mfaStatus.value
@@ -339,15 +341,22 @@ const templateFields = computed(() => {
   return config[templateState.value];
 });
 const inputState = ref(null);
-const changeTemplateState = (up = false) => {
+const changeTemplateState = (up = null) => {
   if (up) {
-    templateState.value = mfaStatus.value
-      ? mapStates['deactivate'].template
-      : mapStates['activate'].template;
+    if (up === 'deactivate') {
+      inputState.value = 'deactivate';
+      templateState.value = mapStates['deactivate'].template;
+    } else if (up === 'generate') {
+      inputState.value = 'generate';
+      templateState.value = mapStates['inputs'].template;
+    } else {
+      templateState.value = mapStates['activate'].template;
+    }
   } else {
     if (mfaStatus.value) {
+      inputState.value =
+        templateState.value === 'backup' ? 'backup' : 'deactivate';
       templateState.value = mapStates['inputs'].template;
-      inputState.value = 'backup';
     } else {
       mapStates['inputs'].template;
     }
@@ -364,11 +373,13 @@ const isDisabled = computed(() => {
   }
   return false;
 });
+
 const leftAction = () => {
   templateState.value === 'backup'
-    ? mfaGenerateNewBackupCodes()
+    ? changeTemplateState('generate')
     : (templateState.value = 'backup');
 };
+
 const qrCodeUrl = ref(null);
 const sharedSecret = ref(null);
 
@@ -376,7 +387,7 @@ const verificationCode = ref(null);
 watch(
   () => verificationCode.value,
   (newValue, oldValue) => {
-    verificationCode.value = newValue.replace(/[^0-9]/g, '');
+    verificationCode.value = newValue && newValue.replace(/[^0-9]/g, '');
   }
 );
 
@@ -395,18 +406,20 @@ const handleClick = () => {
   mapStates[templateState.value].action();
 };
 
-const errorMsg = computed(() => {
+const responseMsg = computed(() => {
   setTimeout(() => {
-    store.error = null;
+    store.responseMessage.isError = null;
+    store.responseMessage.msg = null;
   }, 6000);
-  return translate(store.error?.replace(prefix, ''));
+  return store.responseMessage;
 });
-const successMsg = computed(() => {
-  setTimeout(() => {
-    store.success = null;
-  }, 6000);
-  return translate(store.success?.replace(prefix, ''));
-});
+
+const handleMessages = (response) => {
+  store.responseMessage = {
+    isError: response.error,
+    msg: response.errorMessage || response.successMessage,
+  };
+};
 
 const getMfaStatus = async () => {
   const received = await useFetch(props.mfaStatusUrl, 'GET');
@@ -419,8 +432,10 @@ const mfaActivate = async () => {
   if (!received.error) {
     getMfaStatus();
     templateState.value = 'code';
+    verificationCode.value = null;
     console.log('mfa activate', received);
   }
+  handleMessages(received);
 };
 
 const mfaDeactivate = async () => {
@@ -428,26 +443,36 @@ const mfaDeactivate = async () => {
   if (!received.error) {
     getMfaStatus();
     templateState.value = 'activation';
-    console.log('mfa activate', received);
+    verificationCode.value = null;
+    console.log('mfa deactivate', received);
   }
+  handleMessages(received);
 };
 
 const mfaCheckVerificationCode = async () => {
-  console.log('enter', templateState.value);
-  const received = await useFetch(props.mfaCheckVerificationCodeUrl, 'POST');
+  const received = await useFetch(props.mfaCheckVerificationCodeUrl, 'POST', {
+    verificationCode: verificationCode.value,
+  });
   if (!received.error) {
-    console.log('success');
-    templateState.value === 'inputs' ? mfaDeactivate() : mfaActivate();
+    inputState.value === 'backup'
+      ? mfaDownloadBackupCodes()
+      : templateState.value === 'active'
+      ? mfaActivate()
+      : (inputState.value === 'generate'
+          ? mfaGenerateNewBackupCodes()
+          : mfaDeactivate());
     console.log('mfa verification', received);
   }
-  console.log('error');
 };
 
 const mfaDownloadBackupCodes = async () => {
   const received = await useFetch(props.mfaDownloadBackupCodesUrl, 'GET');
   if (!received.error) {
     console.log('mfa download codes', received);
+    isEditing.value = false;
+    verificationCode.value = null;
   }
+  handleMessages(received);
 };
 
 const code = ref(null);
@@ -468,7 +493,9 @@ const mfaGenerateNewBackupCodes = async () => {
   const received = await useFetch(props.mfaGenerateNewBackupCodesUrl, 'POST');
   if (!received.error) {
     console.log('mfa new backup codes', received);
+    verificationCode.value = null;
   }
+  handleMessages(received);
 };
 
 const mapStates = {
@@ -565,7 +592,7 @@ $medium: 1200px;
       }
     }
   }
-  .error {
+  .message {
     padding: 1em;
     // background-color: rgb(255, 194, 194);
     display: flex;

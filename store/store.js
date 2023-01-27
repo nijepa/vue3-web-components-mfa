@@ -1,6 +1,8 @@
 import { reactive } from 'vue'
 
 export const store = reactive({
-  error: null,
-  success: null
+  responseMessage: {
+    isError: null,
+    msg: null
+  }
 })
