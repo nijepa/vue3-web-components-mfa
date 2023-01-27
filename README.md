@@ -62,8 +62,13 @@
     "primary-color": getComputedStyle(document.querySelector('.site-title')).color,
     font: getComputedStyle(document.querySelector('.site-title')).fontFamily,
     "logo-url": document.querySelector('.customer-logo').src,
-    "mfa-status-url": "${link.geAction('/myprofile/mfa/checkStatus')}",
-    "mfa-activate-url": "${link.geAction('/myprofile/mfa/activate')}"
+    "mfa-status-url": "${link.getAction('/myprofile/mfa/checkStatus')}",
+    "mfa-generate-qr-code-url": "${link.getAction('/myprofile/mfa/generateQrCode')}",
+    "mfa-check-verification-code-url": "${link.getAction('/myprofile/mfa/checkVerificationCode')}",
+    "mfa-activate-url": "${link.getAction('/myprofile/mfa/activate')}",
+    "mfa-download-backup-codes-url": "${link.getAction('/myprofile/mfa/downloadBackupCodes')}",
+    "mfa-deactivate-url": "${link.getAction('/myprofile/mfa/deactivate')}",
+    "mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}"
   }
 
   setAttributes(mfa, mfaProps)
@@ -109,12 +114,32 @@
     - Type: String
     - Default: ""
 
-  ### **`mfaActivateUrl`**
+  ### **`mfaGenerateQrCodeUrl`**
 
     - Type: String
     - Default: ""
 
   ### **`mfaCheckVerificationCodeUrl`**
+
+    - Type: String
+    - Default: ""
+
+  ### **`mfaActivateUrl`**
+
+    - Type: String
+    - Default: ""
+
+  ### **`mfaDownloadBackupCodesUrl`**
+
+    - Type: String
+    - Default: ""
+
+  ### **`mfaDeactivateUrl`**
+
+    - Type: String
+    - Default: ""
+  
+  ### **`mfaGenerateNewBackupCodesUrl`**
 
     - Type: String
     - Default: ""
