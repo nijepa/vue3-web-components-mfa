@@ -325,6 +325,12 @@ onMounted(() => {
   //mfaStatus.value = true;
 });
 
+const focusInput = () => {
+  setTimeout(() => {
+    code.value?.focus();
+  }, 300);
+}
+
 const templateState = ref(null);
 const isEditing = ref(false);
 const initialActivation = ref(true);
@@ -349,6 +355,7 @@ const changeTemplateState = (up = null) => {
     } else if (up === 'generate') {
       inputState.value = 'generate';
       templateState.value = mapStates['inputs'].template;
+      focusInput()
     } else {
       templateState.value = mapStates['activate'].template;
     }
@@ -360,6 +367,7 @@ const changeTemplateState = (up = null) => {
     } else {
       mapStates['inputs'].template;
     }
+    focusInput()
   }
 };
 const getButtonLabel = computed(() => {
@@ -427,6 +435,20 @@ const getMfaStatus = async () => {
     mfaStatus.value = received.multifactorAuthenticationEnabled;
 };
 
+const code = ref(null);
+const mfaGenerateQrCode = async () => {
+  const received = await useFetch(props.mfaGenerateQrCodeUrl, 'GET');
+  if (!received.error) {
+    qrCodeUrl.value = received.QrCodeUrl;
+    sharedSecret.value = received.sharedSecret;
+    templateState.value = 'active';
+    setTimeout(() => {
+      code.value?.focus();
+    }, 300);
+    console.log('mfa qrcode', received);
+  }
+};
+
 const mfaActivate = async () => {
   const received = await useFetch(props.mfaActivateUrl, 'POST');
   if (!received.error) {
@@ -475,20 +497,6 @@ const mfaDownloadBackupCodes = async () => {
   handleMessages(received);
 };
 
-const code = ref(null);
-const mfaGenerateQrCode = async () => {
-  const received = await useFetch(props.mfaGenerateQrCodeUrl, 'GET');
-  if (!received.error) {
-    qrCodeUrl.value = received.QrCodeUrl;
-    sharedSecret.value = received.sharedSecret;
-    templateState.value = 'active';
-    setTimeout(() => {
-      code.value?.focus();
-    }, 300);
-    console.log('mfa qrcode', received);
-  }
-};
-
 const mfaGenerateNewBackupCodes = async () => {
   const received = await useFetch(props.mfaGenerateNewBackupCodesUrl, 'POST');
   if (!received.error) {
@@ -499,7 +507,6 @@ const mfaGenerateNewBackupCodes = async () => {
 };
 
 const mapStates = {
-  inactive: { template: 'inactive', label: 'buttons.activate_2fa' },
   active: {
     template: 'active',
     label: 'buttons.activate_2fa',
