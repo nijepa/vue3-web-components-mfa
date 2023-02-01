@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
+    "html-to-pdfmake": "^2.4.15",
+    "pdfmake": "^0.2.7",
     "vue": "^3.2.45"
   }
 }

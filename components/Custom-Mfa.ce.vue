@@ -71,170 +71,62 @@
     <hr v-if="isEditing" />
 
     <Transition name="slide-up" appear>
-      <div class="main" v-if="isEditing">
-        <!-- <div class="content">
-          <div v-for="item in templateFields">
+      <div class="main" v-if="isEditing && !hasCodes">
+        <div class="content">
+          <template v-for="item in templateFields">
             <h3 v-if="item.tag === 'h3'" :class="item.class">
               {{ translate(item.label) }}
             </h3>
-            <p v-if="item.tag === 'p' && !item.isNote">
+            <p
+              v-if="item.tag === 'p' && !item.isNote"
+              :style="item.style === 'b' && 'font-weight: bold'"
+            >
               {{ translate(item.label) }}
             </p>
+
             <div class="note" v-if="item.isNote">
               <p>
-                <b v-if="item.isNote && item.style === 'b' && item.tag === 'p'">{{
-                  translate(item.label)
-                }}</b>
+                <b>{{ translate('notes.note') }}</b>
               </p>
               <p v-if="item.isNote && item.tag === 'p' && item.style !== 'b'">
                 {{ translate(item.label) }}
               </p>
             </div>
-          </div>
-        </div> -->
-        <!-- *********************** INACTIVE *********************** -->
-        <div class="content" v-if="templateState === 'inactive'">
-          <h3>{{ translate('notes.important_note_title') }}</h3>
-          <p>{{ translate('notes.important_note') }}</p>
-          <p>{{ translate('notes.important_note2') }}</p>
-          <p>{{ translate('notes.important_note3') }}</p>
-          <p>{{ translate('notes.important_note4') }}</p>
-        </div>
-        <!-- *********************** ACTIVATION *********************** -->
-        <Transition name="fade" mode="out-in">
-          <div class="content" v-if="templateState === 'activation'">
-            <h3 class="content-title">
-              {{ translate('notes.important_note_title') }}
-            </h3>
-            <p>{{ translate('notes.mfa_info_01') }}</p>
-            <p>{{ translate('notes.mfa_info_011') }}</p>
-            <p>{{ translate('notes.mfa_info_012') }}</p>
-            <p>{{ translate('notes.mfa_info_013') }}</p>
-            <p>
-              <b>{{ translate('notes.mfa_info_014') }}</b>
+            <p style="text-align: center; margin: 1em" v-if="item.tag === 'a'">
+              <a :href="item.href" target="_blank" class="download">{{
+                translate(item.label)
+              }}</a>
             </p>
-          </div>
-          <!-- *********************** ACTIVE *********************** -->
-          <div class="code" v-else-if="templateState === 'active'">
-            <h3>
-              {{ translate('buttons.activate_2fa') }}
-            </h3>
-            <div class="note">
-              <p>
-                <b>{{ translate('notes.note') }}</b>
-              </p>
-              <p>{{ translate('notes.mfa_info_02') }}</p>
+            <div style="display: flex; justify-content: center">
+              <img
+                v-if="item.tag === 'img'"
+                :src="qrCodeUrl"
+                alt="qrcode"
+                class="qrcode"
+              />
+              <div class="secret" v-if="item.tag === 'sec'">
+                {{ sharedSecret }}
+              </div>
             </div>
-            <p>{{ translate('notes.installation_instruction') }}</p>
-            <p>{{ translate('notes.installation_steps') }}</p>
-            <a
-              href="https://apps.apple.com/de/app/google-authenticator/id388497605"
-              target="_blank"
-              class="download"
-              >{{ translate('notes.download_ios') }}</a
-            >
-            <a
-              href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=de&gl=US"
-              target="_blank"
-              class="download"
-              >{{ translate('notes.download_android') }}</a
-            >
-            <p>{{ translate('notes.installation_steps2') }}</p>
-            <img :src="qrCodeUrl" alt="qrcode" class="qrcode" />
-            <p class="secret">{{ sharedSecret }}</p>
-            <p>{{ translate('notes.installation_steps3') }}</p>
+          </template>
+          <template style="display: flex; justify-content: center">
             <input
+              v-if="getTemplates('execute').includes(templateState)"
               v-model="verificationCode"
               class="input-code"
-              :maxlength="6"
+              :class="templateState !== 'active' && 'code-enter'"
+              :maxlength="8"
               type="text"
               name=""
               id=""
               ref="code"
             />
-          </div>
-        </Transition>
-        <!-- *********************** CODE *********************** -->
-        <div class="content" v-if="templateState === 'code'">
-          <h3 class="content-title">
-            {{ translate('notes.important_note_title') }}
-          </h3>
-          <div class="note">
-            <p>{{ translate('notes.download_code_info') }}</p>
-          </div>
-          <p>{{ translate('notes.backup_codes') }}</p>
-          <p>{{ translate('notes.backup_codes_info') }}</p>
-          <p>
-            <b>{{ translate('notes.backup_codes_info2') }}</b>
-          </p>
-        </div>
-        <!-- *********************** BACKUP *********************** -->
-        <div class="content" v-if="templateState === 'backup'">
-          <p>
-            <b>{{ translate('notes.backup_codes') }}</b>
-          </p>
-          <p>{{ translate('notes.important_codes_info') }}</p>
-          <p>
-            <b>{{ translate('notes.backup_codes_info2') }}</b>
-          </p>
-        </div>
-        <!-- *********************** DEACTIVATE *********************** -->
-        <div class="content" v-if="templateState === 'deactivate'">
-          <p>
-            <b>{{ translate('notes.disable_2fa') }}</b>
-          </p>
-          <div class="note">
-            <p>
-              <b>{{ translate('notes.note') }}</b>
-            </p>
-            <p>{{ translate('notes.mfa_info_02') }}</p>
-          </div>
-          <p>{{ translate('notes.change_device') }}</p>
-          <p>
-            <b>{{ translate('notes.link_device_info') }}</b>
-          </p>
-          <p>
-            {{ translate('notes.device_instructions') }}
-          </p>
-          <p>
-            <b>{{ translate('notes.disable_2fa') }}</b>
-          </p>
-          <p>
-            {{ translate('notes.confirm_disable_2fa') }}
-          </p>
-        </div>
-        <!-- *********************** INPUTS *********************** -->
-        <div class="content" v-if="templateState === 'inputs'">
-          <p>
-            <b v-if="inputState === 'backup'">{{
-              translate('notes.save_codes')
-            }}</b>
-            <b v-else-if="inputState === 'deactivate'">{{
-              translate('notes.deactivate')
-            }}</b>
-            <b v-else>{{ translate('notes.enter_code') }}</b>
-          </p>
-          <p v-if="inputState === 'backup'">
-            {{ translate('notes.received_codes_info') }}
-          </p>
-          <p v-else>{{ translate('notes.generate_codes') }}</p>
-          <p v-if="templateState === 'backup'">
-            <b>{{ translate('notes.received_codes_info2') }}</b>
-          </p>
-          <input
-            v-model="verificationCode"
-            class="input-code code-enter"
-            :maxlength="6"
-            type="text"
-            name=""
-            id=""
-            ref="code"
-          />
+          </template>
         </div>
         <!-- *********************** BUTTONS *********************** -->
         <div class="actions">
           <button
-            v-if="templateState === 'backup' || templateState === 'inputs'"
+            v-if="getTemplates('leftBtn').includes(templateState)"
             class="btn"
             :class="templateState !== 'backup' && 'btn-abort'"
             @click="leftAction"
@@ -263,6 +155,12 @@
           </button>
         </div>
       </div>
+      <BackupCodes
+        v-else-if="isEditing && hasCodes"
+        :logo-url="logoUrl"
+        :primary-color="primaryColor"
+        :codes="backupCodes"
+      />
     </Transition>
   </div>
 </template>
@@ -272,6 +170,7 @@ import { ref, computed, useAttrs, onMounted, watch, nextTick } from 'vue';
 import { useFetch } from '../composables/useFetch';
 import { store } from '../store/store';
 import { config } from '../config/config';
+import BackupCodes from './BackupCodes.vue';
 
 // setting props
 const props = defineProps({
@@ -329,7 +228,7 @@ const focusInput = () => {
   setTimeout(() => {
     code.value?.focus();
   }, 300);
-}
+};
 
 const templateState = ref(null);
 const isEditing = ref(false);
@@ -338,44 +237,39 @@ const editing = () => {
   isEditing.value = !isEditing.value;
   // TODO check if new activation proccess
   //initialActivation.value = false;
+  hasCodes.value = false;
   templateState.value = !mfaStatus.value
     ? mapStates['activation'].template
     : mapStates['backup'].template;
-  console.log(mfaStatus.value, templateState.value, templateFields.value);
 };
 const templateFields = computed(() => {
   return config[templateState.value];
 });
-const inputState = ref(null);
-const changeTemplateState = (up = null) => {
-  if (up) {
-    if (up === 'deactivate') {
-      inputState.value = 'deactivate';
-      templateState.value = mapStates['deactivate'].template;
-    } else if (up === 'generate') {
-      inputState.value = 'generate';
-      templateState.value = mapStates['inputs'].template;
-      focusInput()
-    } else {
-      templateState.value = mapStates['activate'].template;
-    }
-  } else {
-    if (mfaStatus.value) {
-      inputState.value =
-        templateState.value === 'backup' ? 'backup' : 'deactivate';
-      templateState.value = mapStates['inputs'].template;
-    } else {
-      mapStates['inputs'].template;
-    }
-    focusInput()
+const getTemplates = (prop) => {
+  const res = [];
+  for (let key in mapStates) {
+    mapStates[key].hasOwnProperty(prop) && res.push(mapStates[key].template);
   }
+  return res;
+};
+const changeTemplateState = (template = null) => {
+  if (template) {
+    templateState.value = template === 'deactivate' ? 'deactivate' : 'generate';
+  } else {
+    templateState.value =
+      mfaStatus.value && templateState.value === 'deactivate'
+        ? 'deactivation'
+        : 'download';
+  }
+  focusInput();
 };
 const getButtonLabel = computed(() => {
   return translate(mapStates[templateState.value].label);
 });
 const isDisabled = computed(() => {
-  if (templateState.value === 'active' || templateState.value === 'inputs') {
-    return !verificationCode.value || verificationCode.value?.length !== 6
+  if (getTemplates('execute').includes(templateState.value)) {
+    return !verificationCode.value ||
+      ![6, 8].includes(verificationCode.value?.length)
       ? true
       : false;
   }
@@ -429,6 +323,8 @@ const handleMessages = (response) => {
   };
 };
 
+const hasCodes = ref(false);
+
 const getMfaStatus = async () => {
   const received = await useFetch(props.mfaStatusUrl, 'GET');
   if (!received.error)
@@ -441,16 +337,18 @@ const mfaGenerateQrCode = async () => {
   if (!received.error) {
     qrCodeUrl.value = received.QrCodeUrl;
     sharedSecret.value = received.sharedSecret;
+    store.sharedSecret = received.sharedSecret;
     templateState.value = 'active';
-    setTimeout(() => {
-      code.value?.focus();
-    }, 300);
+    focusInput();
     console.log('mfa qrcode', received);
   }
 };
 
 const mfaActivate = async () => {
-  const received = await useFetch(props.mfaActivateUrl, 'POST');
+  const received = await useFetch(
+    props.mfaActivateUrl + `?sharedSecret=${store.sharedSecret}`,
+    'POST'
+  );
   if (!received.error) {
     getMfaStatus();
     templateState.value = 'code';
@@ -458,6 +356,7 @@ const mfaActivate = async () => {
     console.log('mfa activate', received);
   }
   handleMessages(received);
+  store.sharedSecret = '';
 };
 
 const mfaDeactivate = async () => {
@@ -472,27 +371,33 @@ const mfaDeactivate = async () => {
 };
 
 const mfaCheckVerificationCode = async () => {
-  const received = await useFetch(props.mfaCheckVerificationCodeUrl, 'POST', {
-    verificationCode: verificationCode.value,
-  });
+  const sc = store.sharedSecret;
+  const path = sc
+    ? `?verificationCode=${verificationCode.value}&sharedSecret=${sc}`
+    : `?verificationCode=${verificationCode.value}`;
+  const received = await useFetch(
+    props.mfaCheckVerificationCodeUrl + path,
+    // `?verificationCode=${verificationCode.value}`,
+    'POST'
+    //, {verificationCode: verificationCode.value},
+  );
   if (!received.error) {
-    inputState.value === 'backup'
-      ? mfaDownloadBackupCodes()
-      : templateState.value === 'active'
-      ? mfaActivate()
-      : (inputState.value === 'generate'
-          ? mfaGenerateNewBackupCodes()
-          : mfaDeactivate());
+    mapStates[templateState.value].execute();
     console.log('mfa verification', received);
   }
+  handleMessages(received);
+  //hasCodes.value = true;
 };
 
+const backupCodes = ref([]);
 const mfaDownloadBackupCodes = async () => {
   const received = await useFetch(props.mfaDownloadBackupCodesUrl, 'GET');
   if (!received.error) {
-    console.log('mfa download codes', received);
-    isEditing.value = false;
+    //isEditing.value = false;
     verificationCode.value = null;
+    console.log('mfa download codes', received);
+    backupCodes.value = received.backupCodes;
+    hasCodes.value = true;
   }
   handleMessages(received);
 };
@@ -500,8 +405,8 @@ const mfaDownloadBackupCodes = async () => {
 const mfaGenerateNewBackupCodes = async () => {
   const received = await useFetch(props.mfaGenerateNewBackupCodesUrl, 'POST');
   if (!received.error) {
-    console.log('mfa new backup codes', received);
     verificationCode.value = null;
+    console.log('mfa new backup codes', received);
   }
   handleMessages(received);
 };
@@ -511,6 +416,7 @@ const mapStates = {
     template: 'active',
     label: 'buttons.activate_2fa',
     action: mfaCheckVerificationCode,
+    execute: mfaActivate,
   },
   activation: {
     template: 'activation',
@@ -539,22 +445,135 @@ const mapStates = {
     action: mfaCheckVerificationCode,
     leftBtn: 'buttons.abort',
   },
+  generate: {
+    template: 'generate',
+    label: 'buttons.confirm_entry',
+    action: mfaCheckVerificationCode,
+    leftBtn: 'buttons.abort',
+    execute: mfaGenerateNewBackupCodes,
+  },
+  download: {
+    template: 'download',
+    label: 'buttons.confirm_entry',
+    action: mfaCheckVerificationCode,
+    leftBtn: 'buttons.abort',
+    execute: mfaDownloadBackupCodes,
+  },
+  deactivation: {
+    template: 'deactivation',
+    label: 'buttons.confirm_entry',
+    action: mfaCheckVerificationCode,
+    leftBtn: 'buttons.abort',
+    execute: mfaDeactivate,
+  },
 };
 </script>
 <style lang="scss">
 $small: 768px;
 $medium: 1200px;
+
 * {
   //color: rgb(93, 93, 93);
 }
+
+.codes-btn {
+  background-color: v-bind(primaryColor);
+  border: none;
+  padding: 1em;
+  align-self: center;
+  cursor: pointer;
+  color: #fff;
+}
+
+.codes-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.codes-img {
+  height: 200px;
+  width: 200px;
+}
+
+.codes-hr {
+  height: 2em !important;
+  background: v-bind(primaryColor);
+  width: 100%;
+}
+
+.codes-title {
+  text-align: center;
+  border-bottom: 1px solid rgb(93, 93, 93);
+  align-self: center;
+  padding: 1.5em 0 0.5em 0;
+  line-height: 1;
+}
+
+.code-content {
+  display: flex;
+  padding: 1em;
+  align-items: center;
+  flex-direction: column;
+}
+
+.code-block {
+  display: flex;
+  padding: 1.5em;
+  align-items: center;
+}
+
+.code-circle {
+  background: v-bind(primaryColor);
+  border-radius: 50%;
+  height: 2em;
+  width: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1em;
+  font-weight: 700;
+  color: #fff;
+  font-size: 1.7em;
+}
+
+.code-code {
+  font-size: 1.5em;
+}
+
+.download {
+  text-align: center;
+
+  &:hover {
+    color: v-bind(primaryColor);
+  }
+
+  &:first-of-type {
+    margin-top: 1em;
+  }
+
+  &:last-of-type {
+    margin-bottom: 1em;
+  }
+}
+
+.qrcode {
+  width: 150px;
+  height: 150px;
+  align-self: center;
+  margin: 1em 0;
+}
+
 .comp {
   display: flex;
   flex-direction: column;
   padding: 0;
   font-family: v-bind(font);
+
   @media screen and (min-width: $medium) {
     padding: 0 0.8em;
   }
+
   .header {
     display: flex;
     justify-content: space-between;
@@ -562,9 +581,11 @@ $medium: 1200px;
     align-items: center;
     padding: 17px 15px;
     z-index: 100;
+
     @media screen and (min-width: $small) {
       padding: 31px 24px;
     }
+
     @media screen and (min-width: $medium) {
       padding: 0 1em 0 0.5em;
     }
@@ -576,22 +597,27 @@ $medium: 1200px;
       line-height: 1.44444rem;
       color: #fff;
     }
+
     .btn-edit {
       background-color: transparent;
       border: none;
+
       .svg-edit {
         cursor: pointer;
         transition: all 0.25s ease;
         height: 50px;
         width: 50px;
+
         &:hover {
           stroke-width: 1;
           //transform: scale(1.1);
         }
+
         @media screen and (min-width: $small) {
           height: 40px;
           width: 40px;
         }
+
         @media screen and (min-width: $medium) {
           height: 32px;
           width: 32px;
@@ -599,34 +625,42 @@ $medium: 1200px;
       }
     }
   }
+
   .message {
     padding: 1em;
     // background-color: rgb(255, 194, 194);
     display: flex;
     align-items: center;
   }
+
   .error-msg {
     color: rgb(232, 0, 0);
   }
+
   .success-msg {
     color: rgb(12, 125, 12);
   }
+
   .subhead {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
     height: 5em;
     padding: 1em;
+
     @media screen and (max-width: $small) {
       grid-template-columns: repeat(2, 1fr);
       height: 6em;
+
       button {
         grid-column: 1/3;
       }
     }
+
     h4 {
       margin: 0;
     }
+
     h6 {
       margin: 0;
       font-size: 1rem;
@@ -635,6 +669,7 @@ $medium: 1200px;
       color: v-bind(primaryColor);
     }
   }
+
   hr {
     display: block;
     height: 1px;
@@ -643,44 +678,55 @@ $medium: 1200px;
     margin: 0;
     padding: 0;
   }
+
   .main {
     padding: 1em;
     display: flex;
     flex-direction: column;
     justify-content: center;
+
     .content {
       padding: 1em;
+
       .content-title {
         margin-bottom: 2em;
       }
     }
+
     .code {
       display: flex;
       flex-direction: column;
       width: 100%;
+
       .download {
         text-align: center;
+
         &:hover {
           color: v-bind(primaryColor);
         }
+
         &:first-of-type {
           margin-top: 1em;
         }
+
         &:last-of-type {
           margin-bottom: 1em;
         }
       }
+
       .qrcode {
         width: 150px;
         height: 150px;
         align-self: center;
         margin: 1em 0;
       }
+
       .secret {
         margin: 0 auto;
         color: #c31a19;
       }
     }
+
     .actions {
       display: flex;
       width: 100%;
@@ -690,11 +736,13 @@ $medium: 1200px;
       flex-wrap: wrap;
     }
   }
+
   .note {
     background-color: #fffbc6;
     padding: 0.5em 1em;
     margin: 1em 0;
   }
+
   .btn {
     display: inline-block;
     font-weight: 400;
@@ -720,6 +768,7 @@ $medium: 1200px;
     transition: opacity 0.3s;
     width: 100%;
     margin-top: 0.5em;
+
     &:hover {
       font-weight: 600;
       -webkit-box-shadow: none;
@@ -727,20 +776,25 @@ $medium: 1200px;
       //color: rgb(255, 255, 255);
       letter-spacing: -0.0075rem;
     }
+
     @media screen and (min-width: $small) {
       font-size: 1.1rem;
       width: 350px;
     }
+
     @media screen and (min-width: $medium) {
       font-size: 1rem;
     }
   }
+
   .btn-state {
     justify-self: flex-end;
   }
+
   .btn-right {
     margin-left: auto;
   }
+
   .btn-abort {
     background-color: transparent;
     color: rgb(93, 93, 93);
@@ -749,11 +803,13 @@ $medium: 1200px;
     justify-content: center;
     align-items: center;
   }
+
   .btn-disabled {
     background-color: rgb(158, 158, 158);
     border-color: rgb(158, 158, 158);
     pointer-events: none;
   }
+
   .input-code {
     position: relative;
     height: 2.5em;
@@ -768,6 +824,8 @@ $medium: 1200px;
     text-overflow: ellipsis;
     align-self: center;
     text-align: center;
+    margin-top: 1em;
+
     &:focus {
       border-color: v-bind(primaryColor);
       outline: 0px none;
@@ -775,6 +833,7 @@ $medium: 1200px;
       box-shadow: 0 0 0 1px v-bind(primaryColor);
     }
   }
+
   .code-enter {
     width: 100%;
     padding: 0;
@@ -785,22 +844,27 @@ $medium: 1200px;
 .slide-up-leave-active {
   transition: all 0.25s ease;
 }
+
 .slide-up-enter-from {
   opacity: 0;
   transform: translateY(-30px);
 }
+
 .slide-up-leave-to {
   opacity: 0;
   transform: translateY(-30px);
 }
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.25s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
+
 .fade-enter-to,
 .fade-leave-from {
   opacity: 1;
