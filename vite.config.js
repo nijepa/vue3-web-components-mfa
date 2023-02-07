@@ -14,6 +14,9 @@ export default defineConfig({
       }
     })
   ],
+  moduleContext: {
+    './node_modules/pdfmake/build/vfs_fonts.js': 'window',
+  },
   build: {
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled

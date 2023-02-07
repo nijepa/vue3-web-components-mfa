@@ -10,15 +10,17 @@ export const useFetch = async (url, method, data = undefined) => {
       }
       //ContentType: 'application/json',
     });
-    if (response.error || response.status !== 200) {
-      store.responseMessage = {
-        isError: response.status === 200 ? response.error : true,
-        msg: response.errorMessage
-          ? response.errorMessage
-          : response.statusText,
-      };
-      return { error: true };
+    if (response.error) {
+      // store.responseMessage = {
+      //   isError: response.status === 200 ? response.error : true,
+      //   msg: response.errorMessage
+      //     ? response.errorMessage
+      //     : response.statusText,
+      // };
+      // return { error: true };
+      console.log(1,response)
     } else {
+      console.log(2,response)
       return response.json();
     }
   } catch (error) {

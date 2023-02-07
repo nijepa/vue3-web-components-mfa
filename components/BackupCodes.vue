@@ -33,12 +33,14 @@
       </div>
     </div>
     <footer>
-      <div class="">
+      <div class="info">
         <p>cadooz</p>
         <p>GmbHOsterbekstraße 90b</p>
         <p>22083 Hamburg – Germany</p>
       </div>
-      <div class=""></div>
+      <div class="info">
+        <img src="../assets/ips.png" alt="">
+      </div>
     </footer>
   </div> 
   <!-- </section>
@@ -78,9 +80,10 @@ export default {
 }
 </script> -->
 <script setup>
-import htmlToPdfmake from 'html-to-pdfmake';
- //import * as pdfFonts from 'pdfmake/build/vfs_fonts';
- //import  pdfMake from 'pdfmake';
+// import htmlToPdfmake from 'html-to-pdfmake';
+// import  pdfMake from 'pdfmake/build/pdfmake';
+//  import pdfFonts from 'pdfmake/build/vfs_fonts';
+ 
 
 
 import { ref, onMounted } from 'vue';
@@ -95,46 +98,160 @@ const props = defineProps({
   },
   codes: {
     type: Array,
-    default: [111111, 222222, 333333, 444444, 555555],
+    default: () => ['11111111', '22222222', '33333333', '44444444', '55555555'],
   },
 });
-const image = ref(null);
-let context = undefined;
-onMounted(() => {
-  setTimeout(()=> {
-    const canvas = image.value;
-    context = canvas.getContext('2d');
+ const image = ref(null);
+ var base64 
+// let context = undefined;
+onMounted(async () => {
+  
 
-    make_base();
-  }, 500)
+
+    base64 = await getBase64FromUrl(img.src);
+    base64 = base64.replace('text/html', 'image/jpeg')
+    console.log(555, base64)
   
 });
+
 let img = props.logoUrl.replace('url("', '').replace('")', '');
-console.log(8, img)
-let base_image = undefined
-function make_base() {
-  base_image = new Image();
+
+const getBase64FromUrl = async (url) => {
+  const data = await fetch(url);
+  const blob = await data.blob();
   
-  base_image.src = img
-  console.log(img, base_image);
-  base_image.onload = function () {
-    context.drawImage(base_image, 0, 0);
-  };
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    //blob.Properties.ContentType = "image/jpeg"
+    reader.readAsDataURL(blob); 
+    reader.onloadend = () => {
+      const base64data = reader.result;   
+      resolve(base64data);
+    }
+  });
 }
+
+//const base65 = getBase64FromUrl(img.src)
+const getBase64Image = (img) => {
+  var canvas = document.createElement("canvas");
+console.log(99,img)
+if(img) {
+  canvas.width = img.width;
+  canvas.height = img.height;
+  console.log(canvas)
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  var dataURL = canvas.toDataURL("image/png");
+  console.log(777, dataURL)
+  return dataURL//.replace(/^data:image\/?[A-z]*;base64,/);
+}
+}
+
+//var base64 = getBase64Image(document.getElementById("imageid"));
+
+//getBase64Image(imgag)
+ console.log(8, base64)
+// let base_image = undefined
+// function make_base() {
+//   base_image = new Image();
+  
+//   base_image.src = img
+//   console.log(7, base_image);
+//   base_image.onload = function () {
+//     context.drawImage(base_image, 0, 0);
+//   };
+// }
 //const img = props.logoUrl.toDataURL()
+
+
+// function getSvgUrl(svg) {
+//     //return  URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+// }
+// const png = undefined
+// function svgUrlToPng(svgUrl, callback) {
+//     const svgImage = document.createElement('img');
+//     // imgPreview.style.position = 'absolute';
+//     // imgPreview.style.top = '-9999px';
+//     document.body.appendChild(svgImage);
+//     svgImage.onload = function () {
+//         const canvas = document.createElement('canvas');
+//         canvas.width = svgImage.clientWidth;
+//         canvas.height = svgImage.clientHeight;
+//         const canvasCtx = canvas.getContext('2d');
+//         canvasCtx.drawImage(svgImage, 0, 0);
+//         const imgData = canvas.toDataURL('image/png');
+//         png = canvas.toDataURL('image/png');
+//         callback(imgData);
+//         // document.body.removeChild(imgPreview);
+//     };
+//     svgImage.src = svgUrl;
+//  }
+
+//  svgUrlToPng(props.logoUrl)
+//  setTimeout(() => {
+//  console.log(9, png)
+//  },2000)
+
+
+var dd = {
+	content: [
+		'pdfmake (since it\'s based on pdfkit) supports JPEG and PNG format',
+		'If no width/height/fit is provided, image original size will be used',
+		// {
+		// 	image: props.logoUrl,
+		// },
+		'If you specify width, image will scale proportionally',
+		// {
+		// 	image: props.logoUrl,
+		// 	width: 150
+		// },
+		'If you specify both width and height - image will be stretched',
+		// {
+		// 	image: props.logoUrl,
+		// 	width: 150,
+		// 	height: 150,
+		// },
+		'You can also fit the image inside a rectangle',
+		// {
+		// 	image: 'sampleImage.jpg',
+		// 	fit: [100, 100],
+		// 	pageBreak: 'after'
+		// },
+	
+		// Warning! Make sure to copy this definition and paste it to an
+		// external text editor, as the online AceEditor has some troubles
+		// with long dataUrl lines and the following image values look like
+		// they're empty.
+		'Images can be also provided in dataURL format...',
+
+		'or be declared in an "images" dictionary and referenced by name',
+
+		// {
+		// 	image: props.logoUrl,
+		// 	width: 150,
+		// 	opacity: 0.5
+		// },
+	],
+	images: {
+		building: base64
+	}
+	
+}
+
+
 
 const pdfTable = ref(null);
 //const pdfTable = document.getElementById("pdf-content");
-//console.log(pdfTable.innerHTML)
+console.log(2, pdfTable)
 const generateReport = () => {
-  console.log(3, image.value);
+  console.log(3, base64);
   
-  //var html = htmlToPdfmake(pdfTable.value.innerHTML);
-  var html = htmlToPdfmake(image.value, {
-  imagesByReference:true
-});
+  var html = htmlToPdfmake(dd);
+//   var html = htmlToPdfmake(image.value, {
+//   imagesByReference:true
+// });
   const documentDefinition = {
-    content: html.content,
+    content: html,
     images:html.images
     // styles: {
     //   red: {
@@ -144,7 +261,7 @@ const generateReport = () => {
     // }
   };
   pdfMake.vfs = pdfFonts?.pdfMake?.vfs;
-  pdfMake.createPdf(documentDefinition).open();
+  pdfMake.createPdf(dd).open();
 };
 // const generateReport = () => {
 //   console.log(html2Pdf.value)

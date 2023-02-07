@@ -61,7 +61,7 @@
     },
     "primary-color": getComputedStyle(document.querySelector('.site-title')).color,
     font: getComputedStyle(document.querySelector('.site-title')).fontFamily,
-    "logo-url": document.querySelector('.customer-logo').src,
+    "logo-url": getComputedStyle(document.querySelector('.customer-logo-frame > a')).backgroundImage,
     "mfa-status-url": "${link.getAction('/myprofile/mfa/checkStatus')}",
     "mfa-generate-qr-code-url": "${link.getAction('/myprofile/mfa/generateQrCode')}",
     "mfa-check-verification-code-url": "${link.getAction('/myprofile/mfa/checkVerificationCode')}",

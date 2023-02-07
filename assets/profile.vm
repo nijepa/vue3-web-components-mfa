@@ -42,10 +42,12 @@
                 </h1>
                 <div id="content_name_image" class="sub-section-content form-section"></div>
               </section>
-            #end ##end if($accountLoginProperties.hasRole('CIPS_MY_PROFILE_USER').equals(true))
+            #end ##end 
+#if($current_website.isMultifactorAuthenticationEnabled())
 <section id="sec_name_image" class="sub-section numbered separate editable" style="padding: 0;">
 <custom-mfa> </custom-mfa>
 </section>
+#end
             ## Die if-Abfrage dient dazu, dass in keinem Programm was kaputt ist, wenn live geht.
             ## Bitte wieder entfernen wenn die Badge-Geschichte durch ist...
             #if(false)
@@ -134,33 +136,32 @@
 <script src="/scripts/cips/user-profile.js?$scriptVersion"></script>
 <script async defer>
 const mfa = document.querySelector("custom-mfa");
-const element = document.querySelector('.site-title')
 
-      function setAttributes(el, attrs) {
-        for (var key in attrs) {
-          const attr =
-            typeof attrs[key] !== "string"
-              ? JSON.stringify(attrs[key])
-              : attrs[key];
-          el.setAttribute(key, attr);
-        }
-      }
-      const mfaProps = {
-        translations: {
-  #foreach($resource in ${messages.getResourcesWithPrefix('cips.mfa')})
-    '$!{resource.getKey()}': '$!{resource.getValue().replace("'", "")}',
-  #end
-},
-        "primary-color": getComputedStyle(document.querySelector('.site-title')).color,
-font: getComputedStyle(document.querySelector('.site-title')).fontFamily,
-"logo-url": document.querySelector('.customer-logo').src,
-"mfa-status-url": "${link.getAction('/myprofile/mfa/checkStatus')}",
-"mfa-activate-url": "${link.getAction('/myprofile/mfa/activate')}",
-"mfa-deactivate-url": "${link.getAction('/myprofile/mfa/deactivate')}",
-"mfa-download-backup-codes-url": "${link.getAction('/myprofile/mfa/downloadBackupCodes')}",
-"mfa-generate-qr-code-url": "${link.getAction('/myprofile/mfa/generateQrCode')}",
-"mfa-check-verification-code-url": "${link.getAction('/myprofile/mfa/checkVerificationCode')}",
-"mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}"
+function setAttributes(el, attrs) {
+  for (var key in attrs) {
+    const attr =
+      typeof attrs[key] !== "string"
+        ? JSON.stringify(attrs[key])
+        : attrs[key];
+    el.setAttribute(key, attr);
+  }
+}
+const mfaProps = {
+  translations: {
+    #foreach($resource in ${messages.getResourcesWithPrefix('cips.mfa')})
+      '$!{resource.getKey()}': '$!{resource.getValue().replace("'", "")}',
+    #end
+  },
+  "primary-color": getComputedStyle(document.querySelector('.site-title')).color,
+  font: getComputedStyle(document.querySelector('.site-title')).fontFamily,
+  "logo-url": getComputedStyle(document.querySelector('.customer-logo-frame > a')).backgroundImage,
+  "mfa-status-url": "${link.getAction('/myprofile/mfa/checkStatus')}",
+  "mfa-activate-url": "${link.getAction('/myprofile/mfa/activate')}",
+  "mfa-deactivate-url": "${link.getAction('/myprofile/mfa/deactivate')}",
+  "mfa-download-backup-codes-url": "${link.getAction('/myprofile/mfa/downloadBackupCodes')}",
+  "mfa-generate-qr-code-url": "${link.getAction('/myprofile/mfa/generateQrCode')}",
+  "mfa-check-verification-code-url": "${link.getAction('/myprofile/mfa/checkVerificationCode')}",
+  "mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}"
       };
   setAttributes(mfa, mfaProps);
 </script>

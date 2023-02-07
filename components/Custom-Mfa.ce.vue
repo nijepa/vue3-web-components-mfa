@@ -170,6 +170,7 @@ import { ref, computed, useAttrs, onMounted, watch, nextTick } from 'vue';
 import { useFetch } from '../composables/useFetch';
 import { store } from '../store/store';
 import { config } from '../config/config';
+import { resolveUrl } from "../utils/resolveUrl"
 import BackupCodes from './BackupCodes.vue';
 
 // setting props
@@ -306,6 +307,7 @@ const translate = (key) => {
 
 const handleClick = () => {
   mapStates[templateState.value].action();
+  verificationCode.value = null
 };
 
 const responseMsg = computed(() => {
@@ -321,7 +323,15 @@ const handleMessages = (response) => {
     isError: response.error,
     msg: response.errorMessage || response.successMessage,
   };
+  if(response.errorReason) handleSessionExpired(response.errorReason)
 };
+
+const handleSessionExpired = (error) => {
+  if(error === 'session_required') {
+    const loginUrl = resolveUrl('login.do')
+    setTimeout(() => window.location.href = loginUrl, 6000)
+  }
+}
 
 const hasCodes = ref(false);
 
@@ -342,12 +352,13 @@ const mfaGenerateQrCode = async () => {
     focusInput();
     console.log('mfa qrcode', received);
   }
+  handleMessages(received);
 };
 
 const mfaActivate = async () => {
   const received = await useFetch(
     props.mfaActivateUrl + `?sharedSecret=${store.sharedSecret}`,
-    'POST'
+    'GET'
   );
   if (!received.error) {
     getMfaStatus();
@@ -360,7 +371,7 @@ const mfaActivate = async () => {
 };
 
 const mfaDeactivate = async () => {
-  const received = await useFetch(props.mfaDeactivateUrl, 'POST');
+  const received = await useFetch(props.mfaDeactivateUrl, 'GET');
   if (!received.error) {
     getMfaStatus();
     templateState.value = 'activation';
@@ -378,7 +389,7 @@ const mfaCheckVerificationCode = async () => {
   const received = await useFetch(
     props.mfaCheckVerificationCodeUrl + path,
     // `?verificationCode=${verificationCode.value}`,
-    'POST'
+    'GET'
     //, {verificationCode: verificationCode.value},
   );
   if (!received.error) {
@@ -400,10 +411,11 @@ const mfaDownloadBackupCodes = async () => {
     hasCodes.value = true;
   }
   handleMessages(received);
+  //hasCodes.value = true
 };
 
 const mfaGenerateNewBackupCodes = async () => {
-  const received = await useFetch(props.mfaGenerateNewBackupCodesUrl, 'POST');
+  const received = await useFetch(props.mfaGenerateNewBackupCodesUrl, 'GET');
   if (!received.error) {
     verificationCode.value = null;
     console.log('mfa new backup codes', received);
@@ -475,7 +487,22 @@ $medium: 1200px;
 * {
   //color: rgb(93, 93, 93);
 }
-
+footer {
+  background-color: rgb(50,50,50);
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  color: #fff;
+  .info {
+    padding: 2em;
+    p {
+      margin: 0;
+    }
+  }
+}
 .codes-btn {
   background-color: v-bind(primaryColor);
   border: none;
