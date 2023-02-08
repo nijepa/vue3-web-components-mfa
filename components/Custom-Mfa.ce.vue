@@ -170,7 +170,7 @@ import { ref, computed, useAttrs, onMounted, watch, nextTick } from 'vue';
 import { useFetch } from '../composables/useFetch';
 import { store } from '../store/store';
 import { config } from '../config/config';
-import { resolveUrl } from "../utils/resolveUrl"
+import { resolveUrl } from '../utils/resolveUrl';
 import BackupCodes from './BackupCodes.vue';
 
 // setting props
@@ -307,7 +307,7 @@ const translate = (key) => {
 
 const handleClick = () => {
   mapStates[templateState.value].action();
-  verificationCode.value = null
+  verificationCode.value = null;
 };
 
 const responseMsg = computed(() => {
@@ -323,15 +323,15 @@ const handleMessages = (response) => {
     isError: response.error,
     msg: response.errorMessage || response.successMessage,
   };
-  if(response.errorReason) handleSessionExpired(response.errorReason)
+  if (response.errorReason) handleSessionExpired(response.errorReason);
 };
 
 const handleSessionExpired = (error) => {
-  if(error === 'session_required') {
-    const loginUrl = resolveUrl('login.do')
-    setTimeout(() => window.location.href = loginUrl, 6000)
+  if (error === 'session_required') {
+    const loginUrl = resolveUrl('login.do');
+    setTimeout(() => (window.location.href = loginUrl), 6000);
   }
-}
+};
 
 const hasCodes = ref(false);
 
@@ -388,9 +388,7 @@ const mfaCheckVerificationCode = async () => {
     : `?verificationCode=${verificationCode.value}`;
   const received = await useFetch(
     props.mfaCheckVerificationCodeUrl + path,
-    // `?verificationCode=${verificationCode.value}`,
     'GET'
-    //, {verificationCode: verificationCode.value},
   );
   if (!received.error) {
     mapStates[templateState.value].execute();
@@ -404,7 +402,6 @@ const backupCodes = ref([]);
 const mfaDownloadBackupCodes = async () => {
   const received = await useFetch(props.mfaDownloadBackupCodesUrl, 'GET');
   if (!received.error) {
-    //isEditing.value = false;
     verificationCode.value = null;
     console.log('mfa download codes', received);
     backupCodes.value = received.backupCodes;
@@ -488,7 +485,7 @@ $medium: 1200px;
   //color: rgb(93, 93, 93);
 }
 footer {
-  background-color: rgb(50,50,50);
+  background-color: rgb(50, 50, 50);
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -501,6 +498,12 @@ footer {
     p {
       margin: 0;
     }
+    img {
+      width: 200px;
+    }
+  }
+  @media screen and (max-width: $small) {
+    justify-content: center;
   }
 }
 .codes-btn {
