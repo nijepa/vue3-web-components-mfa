@@ -10,7 +10,7 @@
 
 ### Import component
 
-#### In HTML header
+#### in HTML header in `structure.vm` velocity template
 
 ```html
   <script type="importmap">
@@ -26,7 +26,7 @@
 
 ### Place component
 
-#### in velocity template
+#### in velocity template `profile.vm`
 
 ```html
   <custom-mfa />
@@ -150,8 +150,8 @@
 ## Deployment
 
 - build app 
-- rename compiled file to **`mfa.js`**
-- copy file to **`Doocroot-Explorer -> scripts/path/for/app`**
+- rename compiled file to **`mfa.js`
+- upload file to **`Doocroot-Explorer -> scripts/path/for/app`**
 
 <hr>
 

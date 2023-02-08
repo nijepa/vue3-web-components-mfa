@@ -39,10 +39,10 @@
         <p>22083 Hamburg – Germany</p>
       </div>
       <div class="info">
-        <img src="../assets/ips.png" alt="">
+        <img :src="footerLogo" :alt="footerLogo" />
       </div>
     </footer>
-  </div> 
+  </div>
   <!-- </section>
     </vue3-html2pdf> -->
 </template>
@@ -83,9 +83,8 @@ export default {
 // import htmlToPdfmake from 'html-to-pdfmake';
 // import  pdfMake from 'pdfmake/build/pdfmake';
 //  import pdfFonts from 'pdfmake/build/vfs_fonts';
- 
 
-
+import { resolveUrl } from '../utils/resolveUrl';
 import { ref, onMounted } from 'vue';
 const props = defineProps({
   logoUrl: {
@@ -101,17 +100,18 @@ const props = defineProps({
     default: () => ['11111111', '22222222', '33333333', '44444444', '55555555'],
   },
 });
- const image = ref(null);
- var base64 
+
+const baseurl = resolveUrl('a');
+const footerLogo = ref(
+  baseurl.replace('cips/a', 'images/cips/cadooz_IPS_Logo_1c.png')
+);
+const image = ref(null);
+var base64;
 // let context = undefined;
 onMounted(async () => {
-  
-
-
-    base64 = await getBase64FromUrl(img.src);
-    base64 = base64.replace('text/html', 'image/jpeg')
-    console.log(555, base64)
-  
+  base64 = await getBase64FromUrl(img.src);
+  base64 = base64.replace('text/html', 'image/jpeg');
+  console.log(555, base64);
 });
 
 let img = props.logoUrl.replace('url("', '').replace('")', '');
@@ -119,42 +119,42 @@ let img = props.logoUrl.replace('url("', '').replace('")', '');
 const getBase64FromUrl = async (url) => {
   const data = await fetch(url);
   const blob = await data.blob();
-  
+
   return new Promise((resolve) => {
     const reader = new FileReader();
     //blob.Properties.ContentType = "image/jpeg"
-    reader.readAsDataURL(blob); 
+    reader.readAsDataURL(blob);
     reader.onloadend = () => {
-      const base64data = reader.result;   
+      const base64data = reader.result;
       resolve(base64data);
-    }
+    };
   });
-}
+};
 
 //const base65 = getBase64FromUrl(img.src)
 const getBase64Image = (img) => {
-  var canvas = document.createElement("canvas");
-console.log(99,img)
-if(img) {
-  canvas.width = img.width;
-  canvas.height = img.height;
-  console.log(canvas)
-  var ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
-  var dataURL = canvas.toDataURL("image/png");
-  console.log(777, dataURL)
-  return dataURL//.replace(/^data:image\/?[A-z]*;base64,/);
-}
-}
+  var canvas = document.createElement('canvas');
+  console.log(99, img);
+  if (img) {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    console.log(canvas);
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    var dataURL = canvas.toDataURL('image/png');
+    console.log(777, dataURL);
+    return dataURL; //.replace(/^data:image\/?[A-z]*;base64,/);
+  }
+};
 
 //var base64 = getBase64Image(document.getElementById("imageid"));
 
 //getBase64Image(imgag)
- console.log(8, base64)
+console.log(8, base64);
 // let base_image = undefined
 // function make_base() {
 //   base_image = new Image();
-  
+
 //   base_image.src = img
 //   console.log(7, base_image);
 //   base_image.onload = function () {
@@ -162,7 +162,6 @@ if(img) {
 //   };
 // }
 //const img = props.logoUrl.toDataURL()
-
 
 // function getSvgUrl(svg) {
 //     //return  URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
@@ -192,67 +191,63 @@ if(img) {
 //  console.log(9, png)
 //  },2000)
 
-
 var dd = {
-	content: [
-		'pdfmake (since it\'s based on pdfkit) supports JPEG and PNG format',
-		'If no width/height/fit is provided, image original size will be used',
-		// {
-		// 	image: props.logoUrl,
-		// },
-		'If you specify width, image will scale proportionally',
-		// {
-		// 	image: props.logoUrl,
-		// 	width: 150
-		// },
-		'If you specify both width and height - image will be stretched',
-		// {
-		// 	image: props.logoUrl,
-		// 	width: 150,
-		// 	height: 150,
-		// },
-		'You can also fit the image inside a rectangle',
-		// {
-		// 	image: 'sampleImage.jpg',
-		// 	fit: [100, 100],
-		// 	pageBreak: 'after'
-		// },
-	
-		// Warning! Make sure to copy this definition and paste it to an
-		// external text editor, as the online AceEditor has some troubles
-		// with long dataUrl lines and the following image values look like
-		// they're empty.
-		'Images can be also provided in dataURL format...',
+  content: [
+    "pdfmake (since it's based on pdfkit) supports JPEG and PNG format",
+    'If no width/height/fit is provided, image original size will be used',
+    // {
+    // 	image: props.logoUrl,
+    // },
+    'If you specify width, image will scale proportionally',
+    // {
+    // 	image: props.logoUrl,
+    // 	width: 150
+    // },
+    'If you specify both width and height - image will be stretched',
+    // {
+    // 	image: props.logoUrl,
+    // 	width: 150,
+    // 	height: 150,
+    // },
+    'You can also fit the image inside a rectangle',
+    // {
+    // 	image: 'sampleImage.jpg',
+    // 	fit: [100, 100],
+    // 	pageBreak: 'after'
+    // },
 
-		'or be declared in an "images" dictionary and referenced by name',
+    // Warning! Make sure to copy this definition and paste it to an
+    // external text editor, as the online AceEditor has some troubles
+    // with long dataUrl lines and the following image values look like
+    // they're empty.
+    'Images can be also provided in dataURL format...',
 
-		// {
-		// 	image: props.logoUrl,
-		// 	width: 150,
-		// 	opacity: 0.5
-		// },
-	],
-	images: {
-		building: base64
-	}
-	
-}
+    'or be declared in an "images" dictionary and referenced by name',
 
-
+    // {
+    // 	image: props.logoUrl,
+    // 	width: 150,
+    // 	opacity: 0.5
+    // },
+  ],
+  images: {
+    building: base64,
+  },
+};
 
 const pdfTable = ref(null);
 //const pdfTable = document.getElementById("pdf-content");
-console.log(2, pdfTable)
+console.log(2, pdfTable);
 const generateReport = () => {
   console.log(3, base64);
-  
+
   var html = htmlToPdfmake(dd);
-//   var html = htmlToPdfmake(image.value, {
-//   imagesByReference:true
-// });
+  //   var html = htmlToPdfmake(image.value, {
+  //   imagesByReference:true
+  // });
   const documentDefinition = {
     content: html,
-    images:html.images
+    images: html.images,
     // styles: {
     //   red: {
     //     // we define the class called "red"
