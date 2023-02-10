@@ -13,13 +13,6 @@
 #### in HTML header in `structure.vm` velocity template
 
 ```html
-  <script type="importmap">
-    {
-      "imports": {
-        "vue": "/scripts/path/to/vue.js"
-      }
-    }
-  </script>
   <script type="module" crossorigin src="/scripts/path/to/mfa.js"></script>
 
 ```
@@ -150,7 +143,7 @@
 ## Deployment
 
 - build app 
-- rename compiled file to **`mfa.js`
+- rename compiled file to **`mfa.js`**
 - upload file to **`Doocroot-Explorer -> scripts/path/for/app`**
 
 <hr>
