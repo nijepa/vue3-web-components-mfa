@@ -9,7 +9,7 @@ export const useFetch = async (url, method, data = undefined) => {
       },
     });
     //console.log('success', response);
-    return response.json();
+    // return response.json();
   } catch (error) {
     console.log("Error: ", error);
     store.responseMessage.isError = true;

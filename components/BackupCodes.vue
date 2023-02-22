@@ -1,5 +1,6 @@
 <template>
   <button @click="downloadPDF" class="codes-btn">PDF GEN</button>
+  <button @click="generateNewPDF" class="codes-btn">PDF Download</button>
   <div id="pdfTable" class="codes-main" ref="pdfGenerateTable">
     <div style="display: block; margin: 0 auto; width: fit-content">
       <img width="200" :src="logoImg" class="codes-img" ref="image" />
@@ -78,6 +79,9 @@
 <script>
 import { resolveUrl } from "../utils/resolveUrl";
 import { ref } from "vue";
+import JQuery from "jquery";
+window.$ = JQuery;
+
 export default {
   setup() {
     const baseurl = resolveUrl("a");
@@ -109,13 +113,32 @@ export default {
     },
   },
   methods: {
+    generateNewPDF() {
+      var doc = new jsPDF();
+      // var doc = new jsPDF("p", "pt", "A4");
+      var margins = {
+        top: 80,
+        bottom: 60,
+        left: 40,
+        width: 522,
+      };
+
+      // doc.addImage(this.logoImg, "JPEG", 15, 40, 180, 180);
+      doc.text("BackUp-Codes für Ihre 2-Faktor-Authentifizierung", 35, 25);
+      doc.text(this.backupCodes, 35, 25);
+      // doc.html(this.$refs.pdfGenerateTable.innerHTML);
+
+      doc.save("new.pdf");
+    },
     downloadPDF() {
-      let w = window.open();
-      w.document.write(this.$refs.pdfGenerateTable.innerHTML);
-      w.document.close();
+      // let w = window.open();
+      let w = window;
+      let i = this.$refs.pdfGenerateTable.innerHTML;
+      // w.document.write(this.$refs.pdfGenerateTable.innerHTML);
+      // w.document.close();
       w.setTimeout(() => {
-        w.print();
-      }, 1000);
+        i.print();
+      }, 300);
     },
   },
 
