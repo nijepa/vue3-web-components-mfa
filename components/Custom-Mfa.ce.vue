@@ -1,8 +1,8 @@
 <template>
   <div class="comp">
-    <div class="header">
+    <div class="header" ref="header">
       <h1 :style="{ 'font-weight': isEditing ? 600 : 400 }">
-        2. {{ translate("notes.2fa_authentication") }}
+        2. {{ translate('notes.2fa_authentication') }}
       </h1>
       <button class="btn-edit" @click="editing">
         <svg
@@ -39,7 +39,7 @@
         v-if="responseMsg.msg"
         :class="responseMsg.isError ? 'error-msg' : 'success-msg'"
       >
-        <svg width="32px" height="32px" viewBox="0 0 16 16" fill="none">
+        <!-- <svg width="32px" height="32px" viewBox="0 0 16 16" fill="none">
           <path
             v-if="responseMsg.isError"
             fill="rgb(232, 0, 0)"
@@ -51,12 +51,12 @@
             d="M14,4.69298L5.81846,12.87529l-3.81846-3.81846,1.63615-1.63692,2.25019,2.25019L12.43173,3.12471l1.56827,1.56827Z"
           />
         </svg>
-        &nbsp;
+        &nbsp; -->
         {{ responseMsg.msg }}
       </div>
     </Transition>
     <div class="subhead">
-      <h6>{{ translate("notes.status") }}</h6>
+      <h6>{{ translate('notes.status') }}</h6>
       <h4>{{ translateMfaStatus }}</h4>
       <Transition name="fade" appear>
         <button
@@ -64,14 +64,14 @@
           @click="changeTemplateState('deactivate')"
           class="btn btn-state"
         >
-          {{ translate("buttons.edit_2fa") }}
+          {{ translate('buttons.edit_2fa') }}
         </button>
       </Transition>
     </div>
     <hr v-if="isEditing" />
 
     <Transition name="slide-up" appear>
-      <div class="main" v-if="isEditing && !hasCodes">
+      <div class="main" v-if="isEditing">
         <div class="content">
           <template v-for="item in templateFields">
             <h3 v-if="item.tag === 'h3'" :class="item.class">
@@ -86,7 +86,7 @@
 
             <div class="note" v-if="item.isNote">
               <p>
-                <b>{{ translate("notes.note") }}</b>
+                <b>{{ translate('notes.note') }}</b>
               </p>
               <p v-if="item.isNote && item.tag === 'p' && item.style !== 'b'">
                 {{ translate(item.label) }}
@@ -155,23 +155,18 @@
           </button>
         </div>
       </div>
-      <BackupCodes
-        v-else-if="isEditing && hasCodes"
-        :logo-url="logoUrl"
-        :primary-color="primaryColor"
-        :codes="backupCodes"
-      />
     </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, useAttrs, onMounted, watch, nextTick } from "vue";
-import { useFetch } from "../composables/useFetch";
-import { store } from "../store/store";
-import { config } from "../config/config";
-import { resolveUrl } from "../utils/resolveUrl";
-import BackupCodes from "./BackupCodes.vue";
+import { ref, computed, useAttrs, onMounted, watch, nextTick } from 'vue';
+import { useFetch } from '../composables/useFetch';
+import { store } from '../store/store';
+import { config } from '../config/config';
+import { resolveUrl } from '../utils/resolveUrl';
+import { getDataURL } from '../utils/convertImage';
+import { generateNewPDF } from '../utils/generatePDF';
 
 // setting props
 const props = defineProps({
@@ -180,7 +175,7 @@ const props = defineProps({
   },
   primaryColor: {
     type: String,
-    default: "#000",
+    default: '#000',
   },
   font: {
     type: String,
@@ -188,41 +183,63 @@ const props = defineProps({
   },
   logoUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaStatusUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaActivateUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaDeactivateUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaCheckVerificationCodeUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaDownloadBackupCodesUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaGenerateQrCodeUrl: {
     type: String,
-    default: "",
+    default: '',
   },
   mfaGenerateNewBackupCodesUrl: {
     type: String,
-    default: "",
+    default: '',
   },
 });
 
+const baseurl = resolveUrl('a');
+const footerLogo = ref(
+  baseurl.replace('cips/a', 'images/cips/cadooz_IPS_Logo_1c.png')
+);
+let logo = props.logoUrl.replace('url("', '').replace('")', '');
+let ratio = 1;
+
 onMounted(() => {
   props.mfaStatusUrl && getMfaStatus();
+  let image = new Image();
+  image.onload = function () {
+    ratio = +(image.width / image.height).toFixed(2);
+    ratio = +(50 / ratio).toFixed(0);
+  };
+  image.src = logo;
   //mfaStatus.value = true;
+});
+
+let pdfImg = null;
+let footerImg = null;
+getDataURL(logo).then((base64) => {
+  pdfImg = base64;
+});
+getDataURL(footerLogo.value).then((base64) => {
+  footerImg = base64;
 });
 
 const focusInput = () => {
@@ -238,10 +255,9 @@ const editing = () => {
   isEditing.value = !isEditing.value;
   // TODO check if new activation proccess
   //initialActivation.value = false;
-  hasCodes.value = false;
   templateState.value = !mfaStatus.value
-    ? mapStates["download"].template
-    : mapStates["backup"].template;
+    ? mapStates['activation'].template
+    : mapStates['backup'].template;
 };
 const templateFields = computed(() => {
   return config[templateState.value];
@@ -255,12 +271,12 @@ const getTemplates = (prop) => {
 };
 const changeTemplateState = (template = null) => {
   if (template) {
-    templateState.value = template === "deactivate" ? "deactivate" : "generate";
+    templateState.value = template === 'deactivate' ? 'deactivate' : 'generate';
   } else {
     templateState.value =
-      mfaStatus.value && templateState.value === "deactivate"
-        ? "deactivation"
-        : "download";
+      mfaStatus.value && templateState.value === 'deactivate'
+        ? 'deactivation'
+        : 'download';
   }
   focusInput();
 };
@@ -268,7 +284,7 @@ const getButtonLabel = computed(() => {
   return translate(mapStates[templateState.value].label);
 });
 const isDisabled = computed(() => {
-  if (getTemplates("execute").includes(templateState.value)) {
+  if (getTemplates('execute').includes(templateState.value)) {
     return !verificationCode.value ||
       ![6, 8].includes(verificationCode.value?.length)
       ? true
@@ -278,9 +294,9 @@ const isDisabled = computed(() => {
 });
 
 const leftAction = () => {
-  templateState.value === "backup"
-    ? changeTemplateState("generate")
-    : (templateState.value = "backup");
+  templateState.value === 'backup'
+    ? changeTemplateState('generate')
+    : (templateState.value = 'backup');
 };
 
 const qrCodeUrl = ref(null);
@@ -290,17 +306,17 @@ const verificationCode = ref(null);
 watch(
   () => verificationCode.value,
   (newValue, oldValue) => {
-    verificationCode.value = newValue && newValue.replace(/[^0-9]/g, "");
+    verificationCode.value = newValue && newValue.replace(/[^0-9]/g, '');
   }
 );
 
 const mfaStatus = ref(null);
 const translateMfaStatus = computed(() => {
-  const forTranslation = mfaStatus.value ? "notes.active" : "notes.inactive";
+  const forTranslation = mfaStatus.value ? 'notes.active' : 'notes.inactive';
   return translate(forTranslation);
 });
 
-const prefix = "cips.mfa.";
+const prefix = 'cips.mfa.';
 const translate = (key) => {
   return JSON.parse(props.translations)[prefix + key];
 };
@@ -310,19 +326,27 @@ const handleClick = () => {
   verificationCode.value = null;
 };
 
+const header = ref(null);
+const scrollToElement = () => {
+  if (header.value) {
+    header.value.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
 const responseMsg = computed(() => {
   setTimeout(() => {
     store.responseMessage.isError = null;
     store.responseMessage.msg = null;
-  }, 6000);
+  }, 15000);
+  scrollToElement();
   return store.responseMessage;
 });
 
 const handleMessages = (response) => {
   if (response.error) {
     response.errorMessage =
-      !mfaStatus.value && response.errorReason !== "session_required"
-        ? translate("error_message.code_incorrect")
+      !mfaStatus.value && response.errorReason !== 'session_required'
+        ? translate('error_message.code_incorrect')
         : response.errorMessage;
   }
   store.responseMessage = {
@@ -333,30 +357,28 @@ const handleMessages = (response) => {
 };
 
 const handleSessionExpired = (error) => {
-  if (error === "session_required") {
-    const loginUrl = resolveUrl("login.do");
+  if (error === 'session_required') {
+    const loginUrl = resolveUrl('login.do');
     setTimeout(() => (window.location.href = loginUrl), 6000);
   }
 };
 
-const hasCodes = ref(false);
-
 const getMfaStatus = async () => {
-  const received = await useFetch(props.mfaStatusUrl, "GET");
+  const received = await useFetch(props.mfaStatusUrl, 'GET');
   if (!received.error)
     mfaStatus.value = received.multifactorAuthenticationEnabled;
 };
 
 const code = ref(null);
 const mfaGenerateQrCode = async () => {
-  const received = await useFetch(props.mfaGenerateQrCodeUrl, "GET");
+  const received = await useFetch(props.mfaGenerateQrCodeUrl, 'GET');
   if (!received.error) {
     qrCodeUrl.value = received.QrCodeUrl;
     sharedSecret.value = received.sharedSecret;
     store.sharedSecret = received.sharedSecret;
-    templateState.value = "active";
+    templateState.value = 'active';
     focusInput();
-    console.log("mfa qrcode", received);
+    console.log('mfa qrcode', received);
   }
   handleMessages(received);
 };
@@ -364,25 +386,25 @@ const mfaGenerateQrCode = async () => {
 const mfaActivate = async () => {
   const received = await useFetch(
     props.mfaActivateUrl + `?sharedSecret=${store.sharedSecret}`,
-    "GET"
+    'GET'
   );
   if (!received.error) {
     getMfaStatus();
-    templateState.value = "code";
+    templateState.value = 'code';
     verificationCode.value = null;
-    console.log("mfa activate", received);
+    console.log('mfa activate', received);
   }
   handleMessages(received);
-  store.sharedSecret = "";
+  store.sharedSecret = '';
 };
 
 const mfaDeactivate = async () => {
-  const received = await useFetch(props.mfaDeactivateUrl, "GET");
+  const received = await useFetch(props.mfaDeactivateUrl, 'GET');
   if (!received.error) {
     getMfaStatus();
-    templateState.value = "activation";
+    templateState.value = 'activation';
     verificationCode.value = null;
-    console.log("mfa deactivate", received);
+    console.log('mfa deactivate', received);
   }
   handleMessages(received);
 };
@@ -394,91 +416,96 @@ const mfaCheckVerificationCode = async () => {
     : `?verificationCode=${verificationCode.value}`;
   const received = await useFetch(
     props.mfaCheckVerificationCodeUrl + path,
-    "GET"
+    'GET'
   );
-  // if (!received.error) {
-  //   mapStates[templateState.value].execute();
-  //   console.log("mfa verification", received);
-  // }
-  // handleMessages(received);
-  hasCodes.value = true;
+  if (!received.error) {
+    mapStates[templateState.value].execute();
+    console.log('mfa verification', received);
+  }
+  handleMessages(received);
 };
 
 const backupCodes = ref([]);
 const mfaDownloadBackupCodes = async () => {
-  const received = await useFetch(props.mfaDownloadBackupCodesUrl, "GET");
+  const received = await useFetch(props.mfaDownloadBackupCodesUrl, 'GET');
   if (!received.error) {
     verificationCode.value = null;
-    console.log("mfa download codes", received);
+    console.log('mfa download codes', received);
     backupCodes.value = received.backupCodes;
-    hasCodes.value = true;
+    generateNewPDF(
+      props.primaryColor,
+      backupCodes.value,
+      pdfImg,
+      footerImg,
+      ratio
+    );
+    isEditing.value = false
   }
   handleMessages(received);
-  //hasCodes.value = true
 };
 
 const mfaGenerateNewBackupCodes = async () => {
-  const received = await useFetch(props.mfaGenerateNewBackupCodesUrl, "GET");
+  const received = await useFetch(props.mfaGenerateNewBackupCodesUrl, 'GET');
   if (!received.error) {
     verificationCode.value = null;
-    console.log("mfa new backup codes", received);
+    console.log('mfa new backup codes', received);
   }
   handleMessages(received);
 };
 
 const mapStates = {
   active: {
-    template: "active",
-    label: "buttons.activate_2fa",
+    template: 'active',
+    label: 'buttons.activate_2fa',
     action: mfaCheckVerificationCode,
     execute: mfaActivate,
   },
   activation: {
-    template: "activation",
-    label: "buttons.activate_2fa",
+    template: 'activation',
+    label: 'buttons.activate_2fa',
     action: mfaGenerateQrCode,
   },
   code: {
-    template: "code",
-    label: "buttons.download_save_codes",
+    template: 'code',
+    label: 'buttons.download_save_codes',
     action: mfaDownloadBackupCodes,
   },
   backup: {
-    template: "backup",
-    label: "buttons.download_save_codes",
+    template: 'backup',
+    label: 'buttons.download_save_codes',
     action: changeTemplateState,
-    leftBtn: "buttons.generate_codes",
+    leftBtn: 'buttons.generate_codes',
   },
   deactivate: {
-    template: "deactivate",
-    label: "buttons.2fa_disable",
+    template: 'deactivate',
+    label: 'buttons.2fa_disable',
     action: changeTemplateState,
   },
   inputs: {
-    template: "inputs",
-    label: "buttons.confirm_entry",
+    template: 'inputs',
+    label: 'buttons.confirm_entry',
     action: mfaCheckVerificationCode,
-    leftBtn: "buttons.abort",
+    leftBtn: 'buttons.abort',
   },
   generate: {
-    template: "generate",
-    label: "buttons.confirm_entry",
+    template: 'generate',
+    label: 'buttons.confirm_entry',
     action: mfaCheckVerificationCode,
-    leftBtn: "buttons.abort",
+    leftBtn: 'buttons.abort',
     execute: mfaGenerateNewBackupCodes,
   },
   download: {
-    template: "download",
-    label: "buttons.confirm_entry",
+    template: 'download',
+    label: 'buttons.confirm_entry',
     action: mfaCheckVerificationCode,
-    leftBtn: "buttons.abort",
+    leftBtn: 'buttons.abort',
     execute: mfaDownloadBackupCodes,
   },
   deactivation: {
-    template: "deactivation",
-    label: "buttons.confirm_entry",
+    template: 'deactivation',
+    label: 'buttons.confirm_entry',
     action: mfaCheckVerificationCode,
-    leftBtn: "buttons.abort",
+    leftBtn: 'buttons.abort',
     execute: mfaDeactivate,
   },
 };
@@ -486,96 +513,6 @@ const mapStates = {
 <style lang="scss">
 $small: 768px;
 $medium: 1200px;
-
-* {
-  //color: rgb(93, 93, 93);
-}
-footer {
-  background-color: rgb(50, 50, 50);
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
-  color: #fff;
-  .info {
-    padding: 2em;
-    p {
-      margin: 0;
-    }
-    img {
-      width: 200px;
-    }
-  }
-  @media screen and (max-width: $small) {
-    justify-content: center;
-  }
-}
-.codes-btn {
-  background-color: v-bind(primaryColor);
-  border: none;
-  padding: 1em;
-  align-self: center;
-  cursor: pointer;
-  color: #fff;
-}
-
-.codes-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.codes-img {
-  height: 200px;
-  width: 200px;
-}
-
-.codes-hr {
-  height: 2em !important;
-  background: v-bind(primaryColor);
-  width: 100%;
-}
-
-.codes-title {
-  text-align: center;
-  border-bottom: 1px solid rgb(93, 93, 93);
-  align-self: center;
-  padding: 1.5em 0 0.5em 0;
-  line-height: 1;
-}
-
-.code-content {
-  display: flex;
-  padding: 1em;
-  align-items: center;
-  flex-direction: column;
-}
-
-.code-block {
-  display: flex;
-  padding: 1.5em;
-  align-items: center;
-}
-
-.code-circle {
-  background: v-bind(primaryColor);
-  border-radius: 50%;
-  height: 2em;
-  width: 2em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 1em;
-  font-weight: 700;
-  color: #fff;
-  font-size: 1.7em;
-}
-
-.code-code {
-  font-size: 1.5em;
-}
 
 .download {
   text-align: center;
@@ -849,7 +786,8 @@ footer {
   .input-code {
     position: relative;
     height: 2.5em;
-    min-width: 225px;
+    //min-width: 225px;
+    width: 250px;
     padding: 0 20px;
     border: 1px solid rgb(93, 93, 93);
     border-radius: 0;
@@ -868,11 +806,6 @@ footer {
       -webkit-box-shadow: 0 0 0 1px v-bind(primaryColor);
       box-shadow: 0 0 0 1px v-bind(primaryColor);
     }
-  }
-
-  .code-enter {
-    width: 100%;
-    padding: 0;
   }
 }
 
