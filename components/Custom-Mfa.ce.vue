@@ -214,14 +214,14 @@ const props = defineProps({
     default: '',
   },
 });
-
+// resolve images url's
 const baseurl = resolveUrl('a');
 const footerLogo = ref(
   baseurl.replace('cips/a', 'images/cips/cadooz_IPS_Logo_1c.png')
 );
 let logo = props.logoUrl.replace('url("', '').replace('")', '');
 let ratio = 1;
-
+// get status & calculate logo ratio
 onMounted(() => {
   props.mfaStatusUrl && getMfaStatus();
   let image = new Image();
@@ -230,9 +230,8 @@ onMounted(() => {
     ratio = +(50 / ratio).toFixed(0);
   };
   image.src = logo;
-  //mfaStatus.value = true;
 });
-
+// convert images to base64
 let pdfImg = null;
 let footerImg = null;
 getDataURL(logo).then((base64) => {
@@ -250,11 +249,8 @@ const focusInput = () => {
 
 const templateState = ref(null);
 const isEditing = ref(false);
-const initialActivation = ref(true);
 const editing = () => {
   isEditing.value = !isEditing.value;
-  // TODO check if new activation proccess
-  //initialActivation.value = false;
   templateState.value = !mfaStatus.value
     ? mapStates['activation'].template
     : mapStates['backup'].template;

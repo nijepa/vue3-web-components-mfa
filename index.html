@@ -140,26 +140,6 @@
       //mfa.setAttribute("translations", JSON.stringify(translationMap));
       //mfa.setAttribute("primary-color", ts);
     </script>
-    <script
-      type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="https://html2canvas.hertzen.com/dist/html2canvas.js"
-    ></script>
-    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-    <!-- <script async defer>
-      window.addEventListener('loaded', () => {
-              translationMap: {
-      #foreach($resource in ${messages.getResourcesWithPrefix('cips.cust')})
-                '$!{resource.getKey()}': '$!{resource.getValue().replace("'", "")}',
-      #end
-              }
-            })
-      </script> -->
     <!-- <custom-mfa translations='{"cips.mfa.backup_codes.download.redeemed":";Eingelöst","cips.mfa.backup_codes.download.file_name":"BackUp-Codes","cips.mfa.error_message.disabled_mfa":"Beim Versuch, die mehrstufige Authentifizierung zu deaktivieren, ist ein Fehler aufgetreten",";cips.mfa.success_message.disabled_mfa":";Multifaktor-Authentifizierung wurde deaktiviert","cips.mfa.error_message.enabled_mfa":"Beim Versuch, die mehrstufige Authentifizierung zu aktivieren, ist ein Fehler aufgetreten","cips.mfa.success_message.enabled_mfa":"Multifaktor-Authentifizierung wurde aktiviert"}' primary-color="rgb(237, 107, 125)"> </custom-mfa> -->
   </body>
 </html>

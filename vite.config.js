@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
-  //plugins: [vue({ customElement: true })],
   plugins: [
     vue({
       customElement: true,
@@ -14,9 +13,6 @@ export default defineConfig({
       }
     })
   ],
-  // moduleContext: {
-  //   './node_modules/pdfmake/build/vfs_fonts.js': 'window',
-  // },
   // build: {
   //   rollupOptions: {
   //     // make sure to externalize deps that shouldn't be bundled
@@ -29,11 +25,6 @@ export default defineConfig({
   //         vue: 'Vue'
   //       }
   //     }
-  //   }
-  // }
-  // build: {
-  //   rollupOptions: {
-  //     target: "./assets/toast.js"
   //   }
   // }
 });
