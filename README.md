@@ -22,7 +22,7 @@
 #### in velocity template `profile.vm`
 
 ```html
-  <custom-mfa />
+  <custom-mfa></custom-mfa>
 ```
 
 ## Passing data to component
@@ -131,7 +131,7 @@
 
     - Type: String
     - Default: ""
-  
+
   ### **`mfaGenerateNewBackupCodesUrl`**
 
     - Type: String
@@ -142,7 +142,7 @@
 
 ## Deployment
 
-- build app 
+- build app
 - rename compiled file to **`mfa.js`**
 - upload file to **`Doocroot-Explorer -> scripts/path/for/app`**
 
