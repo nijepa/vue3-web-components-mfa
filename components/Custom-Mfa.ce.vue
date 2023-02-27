@@ -16,7 +16,7 @@
           stroke="rgb(255, 255, 255)"
           stroke-width="0"
           :style="{
-            fill: isEditing ? 'rgb(210, 210, 210)' : 'rgb(255, 255, 255)',
+            fill: isEditing ? 'rgb(255, 255, 255)' : 'rgb(255, 255, 255)',
           }"
         >
           <g transform="matrix(1.3333333,0,0,-1.3333333,0,34.179467)">
@@ -115,7 +115,7 @@
               v-model="verificationCode"
               class="input-code"
               :class="templateState !== 'active' && 'code-enter'"
-              :maxlength="8"
+              :maxlength="templateState !== 'generate' ? 8 : 6"
               type="text"
               name=""
               id=""

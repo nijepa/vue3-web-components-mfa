@@ -38,5 +38,5 @@ export const generateNewPDF = (color, codes, image, footerImage, ratio) => {
   doc.text("GmbHOsterbekstraße 90b", 15, 275);
   doc.text("22083 Hamburg – Germany", 15, 280);
   doc.addImage(footerImage, "JPEG", 145, 267, 55, 15);
-  doc.save("new.pdf");
+  doc.save("Backup_Codes.pdf");
 };
