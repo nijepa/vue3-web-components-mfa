@@ -556,7 +556,7 @@ $medium: 1200px;
         height: 50px;
         width: 50px;
         &:hover {
-          stroke-width: 1;
+          //stroke-width: 1;
           //transform: scale(1.1);
         }
         @media screen and (min-width: $small) {
