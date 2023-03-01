@@ -8,6 +8,7 @@
 #set( $piwikCustomPageViewPath = "Mein_Konto/Mein_Profil" )
 #set( $banner_page_instance = "" )
 #set( $breadcrumbs = "<li><span>$!{messages.get('cips.labels.user.my_account')}</span></li><li><a href='${link.getAction(""/myprofile"")}'>$!{messages.get('cips.labels.profile.my')}</a></li>" )
+#set( $mfalogin = ${session.getAttribute($constants.get('SESSION_KEY_MULTIFACTOR_AUTHENTICATION_ACTIVATION_AFTER_LOGIN'))} )
 <script>
   userProfileSettings = {
     fileUploadUrl: "${link.getAction('/myprofile/upload')}",
@@ -16,6 +17,8 @@
   }
 </script>
 <div class="content-site">
+<div id="islogin">$mfalogin</div>
+
   <div class="row">
     <div class="col-xs-12">
       <section class="site">
@@ -42,7 +45,7 @@
                 </h1>
                 <div id="content_name_image" class="sub-section-content form-section"></div>
               </section>
-            #end ##end 
+            #end ##end if($accountLoginProperties.hasRole('CIPS_MY_PROFILE_USER').equals(true))
 #if($current_website.isMultifactorAuthenticationEnabled())
 <section id="sec_name_image" class="sub-section numbered separate editable" style="padding: 0;">
 <custom-mfa> </custom-mfa>
@@ -161,7 +164,8 @@ const mfaProps = {
   "mfa-download-backup-codes-url": "${link.getAction('/myprofile/mfa/downloadBackupCodes')}",
   "mfa-generate-qr-code-url": "${link.getAction('/myprofile/mfa/generateQrCode')}",
   "mfa-check-verification-code-url": "${link.getAction('/myprofile/mfa/checkVerificationCode')}",
-  "mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}"
+  "mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}",
+  "from-mfa-login": document.querySelector('#islogin').innerText
       };
   setAttributes(mfa, mfaProps);
 </script>

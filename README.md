@@ -61,7 +61,8 @@
     "mfa-activate-url": "${link.getAction('/myprofile/mfa/activate')}",
     "mfa-download-backup-codes-url": "${link.getAction('/myprofile/mfa/downloadBackupCodes')}",
     "mfa-deactivate-url": "${link.getAction('/myprofile/mfa/deactivate')}",
-    "mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}"
+    "mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}",
+    "from-mfa-login": document.querySelector('#islogin').innerText
   }
 
   setAttributes(mfa, mfaProps)
@@ -137,6 +138,15 @@
     - Type: String
     - Default: ""
 
+<br/>
+
+- #### ***Session key if user comes form mfa login page:***
+
+  ### **`fromMfaLogin`**
+
+    - Type: String
+    - Default: ""
+    
 <br/>
 <hr>
 
