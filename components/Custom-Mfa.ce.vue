@@ -5,7 +5,7 @@
       <h1 :style="{ 'font-weight': isEditing ? 600 : 400 }">
         2. {{ translate("notes.2fa_authentication") }}
       </h1>
-      <button class="btn-edit" @click="editing">
+      <button class="btn-edit" @click="editing(false)">
         <svg
           class="svg-edit"
           viewBox="0 0 33.583 34.179"
@@ -212,6 +212,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  fromMfaLogin: {
+    typeof: String,
+    default: ''
+  }
 });
 // resolve images url's
 const baseurl = resolveUrl("a");
@@ -223,6 +227,8 @@ let ratio = 1;
 // get status & calculate logo ratio
 onMounted(() => {
   props.mfaStatusUrl && getMfaStatus();
+  isEditing.value = props.fromMfaLogin === 'true'
+  isEditing.value && editing(true)
   let image = new Image();
   image.onload = function () {
     ratio = +(image.width / image.height).toFixed(2);
@@ -249,8 +255,8 @@ const focusInput = () => {
 // handle templates states
 const templateState = ref(null);
 const isEditing = ref(false);
-const editing = () => {
-  isEditing.value = !isEditing.value;
+const editing = (fromLogin = false) => {
+  if(!fromLogin) isEditing.value = !isEditing.value;
   templateState.value = !mfaStatus.value
     ? mapStates["activation"].template
     : mapStates["backup"].template;
