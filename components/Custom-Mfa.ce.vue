@@ -1,7 +1,7 @@
 <template>
   <div class="comp">
     <!-- *********************** HEADER *********************** -->
-    <div class="header" ref="header">
+    <div class="header" ref="header" v-if="fromMfaLogin !== 'true'">
       <h1 :style="{ 'font-weight': isEditing ? 600 : 400 }">
         2. {{ translate("notes.2fa_authentication") }}
       </h1>
@@ -57,7 +57,7 @@
         {{ responseMsg.msg }}
       </div>
     </Transition>
-    <div class="subhead">
+    <div class="subhead" v-if="fromMfaLogin !== 'true'">
       <h6>{{ translate("notes.status") }}</h6>
       <h4>{{ translateMfaStatus }}</h4>
       <Transition name="fade" appear>
@@ -70,7 +70,7 @@
         </button>
       </Transition>
     </div>
-    <hr v-if="isEditing" />
+    <hr v-if="isEditing && fromMfaLogin !== 'true'" />
     <Transition name="slide-up" appear>
       <div class="main" v-if="isEditing">
         <div class="content">
@@ -215,6 +215,10 @@ const props = defineProps({
   fromMfaLogin: {
     typeof: String,
     default: ''
+  },
+  fromMfaHint: {
+    typeof: String,
+    default: ''
   }
 });
 // resolve images url's
@@ -226,9 +230,10 @@ let logo = props.logoUrl.replace('url("', "").replace('")', "");
 let ratio = 1;
 // get status & calculate logo ratio
 onMounted(() => {
-  props.mfaStatusUrl && getMfaStatus();
-  isEditing.value = props.fromMfaLogin === 'true'
+  props.fromMfaLogin !== 'true' && props.mfaStatusUrl && getMfaStatus();
+  isEditing.value = props.fromMfaHint === 'true'
   isEditing.value && editing(true)
+  if(props.fromMfaLogin === 'true') mfaGenerateQrCode()
   let image = new Image();
   image.onload = function () {
     ratio = +(image.width / image.height).toFixed(2);
@@ -435,6 +440,10 @@ const mfaDownloadBackupCodes = async () => {
       ratio
     );
     isEditing.value = false;
+    if (props.fromMfaLogin === "true") {
+      const dashboardUrl = window.location.href.replace('login', 'welcome')
+      setTimeout(() => (window.location.href = dashboardUrl), 6000);
+    }
   }
   handleMessages(received);
 };
