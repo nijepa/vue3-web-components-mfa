@@ -19,13 +19,25 @@
 
 ### Place component
 
-#### in velocity template `profile.vm`
+#### in velocity templates `profile.vm` and `mfa_activate_login.vm`
 
 ```html
   <custom-mfa></custom-mfa>
 ```
 
 ## Passing data to component
+
+### Some sessions keys are required for optional/mandatory mfa:
+
+##### in `mfa_activate_login.vm` template:
+```html
+  #set( $mfalogin = ${session.getAttribute($constants.get('SESSION_KEY_MULTIFACTOR_AUTHENTICATION_ACTIVATION_REQUIRED'))} )
+```
+
+##### in `profile.vm` template:
+```html
+  #set( $mfalogin = ${session.getAttribute($constants.get('SESSION_KEY_MULTIFACTOR_AUTHENTICATION_ACTIVATION_AFTER_LOGIN'))} )
+```
 
 ### We can use helper function to pass all the attributes
 
@@ -41,7 +53,7 @@
   }
 ```
 
-### passing data example:
+### passing data example (`profile.vm` velocity template):
 
 ```js
   const mfa = document.querySelector('custom-mfa')
@@ -62,10 +74,36 @@
     "mfa-download-backup-codes-url": "${link.getAction('/myprofile/mfa/downloadBackupCodes')}",
     "mfa-deactivate-url": "${link.getAction('/myprofile/mfa/deactivate')}",
     "mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}",
-    "from-mfa-login": document.querySelector('#islogin').innerText
+    "from-mfa-hint": document.querySelector('#islogin').innerText
   }
 
   setAttributes(mfa, mfaProps)
+```
+
+### passing data example (`mfa_activate_login.vm` velocity template):
+
+```js
+  const mfa = document.querySelector("custom-mfa");
+
+  const mfaProps = {
+    translations: {
+      #foreach($resource in ${messages.getResourcesWithPrefix('cips.mfa')})
+        '$!{resource.getKey()}': '$!{resource.getValue().replace("'", "")}',
+      #end
+    },
+    "primary-color": getComputedStyle(document.querySelector('.site-title')).color,
+    font: getComputedStyle(document.querySelector('.site-title')).fontFamily,
+    "logo-url": getComputedStyle(document.querySelector('.customer-logo-frame > a')).backgroundImage,
+    "mfa-status-url": "${link.getAction('/myprofile/mfa/checkStatus')}",
+    "mfa-activate-url": "${link.getAction('/login/mfa/activate')}",
+    "mfa-deactivate-url": "${link.getAction('/myprofile/mfa/deactivate')}",
+    "mfa-download-backup-codes-url": "${link.getAction('/login/mfa/downloadBackupCodes')}",
+    "mfa-generate-qr-code-url": "${link.getAction('/login/mfa/generateQrCode')}",
+    "mfa-check-verification-code-url": "${link.getAction('/login/mfa/checkVerificationCode')}",
+    "mfa-generate-new-backup-codes-url": "${link.getAction('/myprofile/mfa/generateNewBackupCodes')}",
+    "from-mfa-login": document.querySelector('#islogin').innerText
+  };
+  setAttributes(mfa, mfaProps);
 ```
 
 <hr>
@@ -140,7 +178,12 @@
 
 <br/>
 
-- #### ***Session key if user comes form mfa login page:***
+- #### ***Session keys if user comes form mfa login/hint page:***
+
+  ### **`fromMfaHint`**
+
+    - Type: String
+    - Default: ""
 
   ### **`fromMfaLogin`**
 
