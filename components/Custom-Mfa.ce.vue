@@ -233,7 +233,10 @@ onMounted(() => {
   props.fromMfaLogin !== 'true' && props.mfaStatusUrl && getMfaStatus();
   isEditing.value = props.fromMfaHint === 'true'
   isEditing.value && editing(true)
-  if(props.fromMfaLogin === 'true') mfaGenerateQrCode()
+  if(props.fromMfaLogin === 'true') {
+    mfaGenerateQrCode()
+    isEditing.value = true
+  }
   let image = new Image();
   image.onload = function () {
     ratio = +(image.width / image.height).toFixed(2);
