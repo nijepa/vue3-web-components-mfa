@@ -8,7 +8,7 @@ export const config = {
     { label: "notes.mfa_info_014", tag: "p", style: "b" },
   ],
   active: [
-    { label: "buttons.activate_2fa", tag: "h3" },
+    { label: "buttons.activate_2fa", tag: "h3", class: "content-title" },
     { label: "notes.mfa_info_02", tag: "p", isNote: true },
     { label: "notes.installation_instruction", tag: "p" },
     { label: "notes.installation_steps", tag: "p" },
@@ -35,12 +35,12 @@ export const config = {
     { label: "notes.backup_codes_info2", tag: "p", style: "b" },
   ],
   backup: [
-    { label: "notes.backup_codes", tag: "p", style: "b" },
+    { label: "notes.backup_codes", tag: "h3", class: "content-title" },
     { label: "notes.important_codes_info", tag: "p" },
     { label: "notes.backup_codes_info2", tag: "p", style: "b" },
   ],
   deactivate: [
-    { label: "notes.disable_2fa", tag: "p", style: "b" },
+    { label: "notes.disable_2fa", tag: "h3", class: "content-title" },
     { label: "notes.mfa_info_02", tag: "p", isNote: true },
     { label: "notes.change_device", tag: "p", style: "b" },
     { label: "notes.link_device_info", tag: "p" },
@@ -49,16 +49,16 @@ export const config = {
     { label: "notes.confirm_disable_2fa", tag: "p" },
   ],
   generate: [
-    { label: "notes.enter_code", tag: "p", style: "b" },
+    { label: "notes.enter_code", tag: "h3", class: "content-title" },
     { label: "notes.generate_codes", tag: "p" },
   ],
   download: [
-    { label: "notes.save_codes", tag: "p", style: "b" },
+    { label: "notes.save_codes", tag: "h3", class: "content-title" },
     { label: "notes.received_codes_info", tag: "p" },
     { label: "notes.received_codes_info2", tag: "p" },
   ],
   deactivation: [
-    { label: "notes.deactivate", tag: "p", style: "b" },
+    { label: "notes.deactivate", tag: "h3", class: "content-title" },
     { label: "notes.generate_codes", tag: "p" },
   ],
 };
