@@ -88,8 +88,10 @@
               <p>
                 <b>{{ translate('notes.note') }}</b>
               </p>
-              <p v-if="item.isNote && item.tag === 'p' && item.style !== 'b'" v-html="translate(item.label)">
-              </p>
+              <p
+                v-if="item.isNote && item.tag === 'p' && item.style !== 'b'"
+                v-html="translate(item.label)"
+              ></p>
             </div>
             <p style="text-align: center; margin: 1em" v-if="item.tag === 'a'">
               <a :href="item.href" target="_blank" class="download">{{
@@ -127,6 +129,7 @@
           <button
             v-if="getTemplates('leftBtn').includes(templateState)"
             class="btn btn-abort"
+            :class="{ 'btn-light': templateState === 'backup' }"
             @click="leftButtonAction"
           >
             <svg
@@ -149,7 +152,7 @@
             :disabled="isDisabled"
             :class="{
               'btn-disabled': isDisabled,
-              'btn-abort': templateState === 'backup',
+              'btn-light': templateState === 'backup',
             }"
           >
             {{ getButtonLabel }}
@@ -644,8 +647,10 @@ $medium: 1200px;
         margin: 0.5rem 0;
       }
       .content-title {
-        margin-bottom: 1.5em;
+        margin-top: -0.5rem;
+        margin-bottom: 0.5rem;
         font-size: 1.5rem;
+        line-height: 1.25;
       }
     }
     .code {
@@ -680,7 +685,7 @@ $medium: 1200px;
       width: 100%;
       justify-content: space-between;
       align-items: center;
-      margin-top: 1em;
+      margin-top: -1rem;
       flex-wrap: wrap;
     }
   }
@@ -749,6 +754,15 @@ $medium: 1200px;
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .btn-light {
+    background-color: transparent;
+    color: v-bind(primaryColor);
+    border-color: v-bind(primaryColor);
+  }
+  .btn-light:hover {
+    background-color: v-bind(primaryColor);
+    color: #fff;
   }
   .btn-disabled {
     background-color: rgb(158, 158, 158);

@@ -2,7 +2,7 @@
 
 ## Vite, Vue3 web-component *`custom-mfa`*
 
-(standalone web component made with Vue3 & Vite)
+(standalone web-component for multi factor authentication)
 
 <hr>
 
